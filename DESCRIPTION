@@ -1,0 +1,24 @@
+Package: DATRAS
+Type: Package
+Title: Read and convert raw data obtained from
+    http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx
+Version: 1.0
+Date: 2010-06-03
+Author: Kasper Kristensen and Casper Berg
+Maintainer: <kaskr@imm.dtu.dk>
+Description: Read datras hydrographical data, length data
+    and age data into single data structure. Convert length
+    distributions by haul to age distrubutions by haul
+    using continuation ratio logits.
+Suggests:
+    mapdata,
+    maps,
+    mgcv,
+    multicore
+License: GPL
+LazyLoad: yes
+Collate:
+    'ALKfuns.R'
+    'read_datras.R'
+    'ices_stuff.R'
+    'DATRAS.R'
