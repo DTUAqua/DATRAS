@@ -1,0 +1,47 @@
+\name{fitALKone}
+\alias{fitALKone}
+\title{Fit part of the continuation ratio model using GAMs (helper function)}
+\usage{
+  fitALKone(a, ages, AL, model, gamma, autoChooseK = FALSE,
+    useBIC = FALSE, varCof = FALSE, maxK = 100,
+    verbose = FALSE, ...)
+}
+\arguments{
+  \item{a}{Condition on being at least this age.}
+
+  \item{ages}{Vector with consecutive ages to consider,
+  last age is plus group.}
+
+  \item{AL}{Age-length data from a DATRASraw object}
+
+  \item{model}{Model formula (string or formula), or a
+  vector of strings specifying the formula for each age
+  group.}
+
+  \item{gamma}{Multiplier for AIC score (see ?gam)}
+
+  \item{autoChooseK}{Automatic choice of the max. dimension
+  for the basis used to represent the smooth term for
+  spatial ALK. See ?s in the mgcv-package.}
+
+  \item{useBIC}{Use Bayesian Information Criterion for
+  smoothness selection instead of AIC.}
+
+  \item{varCof}{Use varying coefficients model for spatial
+  effect.}
+
+  \item{maxK}{Maximum k to use. Only applies if autoChooseK
+  is TRUE.}
+
+  \item{verbose}{Print model summary?}
+
+  \item{...}{Extra parameters to gam()}
+}
+\value{
+  Object of class '"gam"'
+}
+\description{
+  Fit part of the continuation ratio model using GAMs
+  (helper function)
+}
+

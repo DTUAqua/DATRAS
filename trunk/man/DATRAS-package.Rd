@@ -1,0 +1,45 @@
+\docType{package}
+\name{DATRAS-package}
+\alias{DATRAS}
+\alias{DATRAS-package}
+\title{Read and convert raw data obtained from ICES}
+\description{
+  Read datras hydrographical data, length data and age data
+  into single data structure. Convert length distributions
+  by haul to age distrubutions by haul using continuation
+  ratio logits.
+}
+\details{
+  \tabular{ll}{ Package: \tab DATRAS\cr Type: \tab
+  Package\cr Version: \tab 1.0\cr Date: \tab 2010-06-03\cr
+  License: \tab GPL\cr LazyLoad: \tab yes\cr }
+}
+\examples{
+require(DATRAS)
+
+## Example file
+zipfile <- system.file("exchange","Exchange1.zip",package="DATRAS")
+
+## Step 1. Read exchange data into R
+d <- readExchange(zipfile)
+
+## Step 2. Preprocess the data
+## -Take subset
+## -Add size spectrum
+d <- subset(d,lon>10,Species=="Gadus morhua")
+d <- addSpectrum(d)
+d <- addNage(d,2:4)
+
+## Step 3. Convert to data.frame with one line for each response.
+df <- as.data.frame(d,response="Nage")
+
+}
+\author{
+  Kasper Kristensen and Casper Berg
+
+  Maintainer: <kaskr@imm.dtu.dk> <cbe@aqua.dtu.dk>
+}
+\references{
+  \url{http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx}
+}
+

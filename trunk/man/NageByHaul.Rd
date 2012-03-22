@@ -1,0 +1,20 @@
+\name{NageByHaul}
+\alias{NageByHaul}
+\title{Calculate numbers-at-age for a particular haul.}
+\usage{
+  NageByHaul(row, x, returnALK = FALSE)
+}
+\arguments{
+  \item{row}{Row number (haul) to be predicted.}
+
+  \item{x}{An object of class "ALKmodel"}
+
+  \item{returnALK}{Return ALK instead of numbers-at-age}
+}
+\value{
+  Vector with numbers-at-age (or ALK)
+}
+\description{
+  Calculate numbers-at-age for a particular haul.
+}
+

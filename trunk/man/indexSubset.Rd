@@ -1,0 +1,34 @@
+\name{[.DATRASraw}
+\alias{[.DATRASraw}
+\title{Sample unit subset.}
+\usage{
+  [.DATRASraw(x, i)
+}
+\arguments{
+  \item{x}{DATRASraw object}
+
+  \item{i}{Integer vector}
+}
+\value{
+  DATRASraw object
+}
+\description{
+  Sample unit subset for DATRASraw object.
+}
+\details{
+  Extract all information related to a given set of hauls.
+  For instance x[1:2] extracts the first two hauls.
+  Duplicated integer values results in automatic renaming
+  of haul ids. This can be useful for sampling with
+  replacement.
+}
+\examples{
+\dontshow{
+file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
+x <- readExchange(file1)
+}
+x[1:2]
+x[sample(3,replace=TRUE)]
+split(x,x$Country)
+}
+
