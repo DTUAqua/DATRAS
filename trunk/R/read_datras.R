@@ -274,7 +274,7 @@ addExtraVariables <- function(IBTS){
   ## For units smaller than 1cm (i.e. "." and "0") we also have to move the decimal point,
   ## e.g. LngtClass=500 with "." corresponds to 50.0cm-50.1cm.
   LngtCode2cm <- c("."=0.1, "0"=0.1, "1"=1, "2"=1, "5"=1) ## Valid for IBTS. Also BITS ? - YES!
-  file <- system.file("data/SpeciesTable.csv",package="DATRAS")
+  file <- system.file("SpeciesTable.csv",package="DATRAS")
   specdat <- read.csv(file,skip=3,strip.white = TRUE)
   SpecCode2species <- structure(as.character(specdat$Species), names=specdat$TSN.code)
   lookup <- function(x,table){
@@ -313,7 +313,7 @@ addExtraVariables <- function(IBTS){
   d2 <- transform(d2,lon=ShootLong,lat=ShootLat)
 
   ## Add roundfish area numbers
-  file <- system.file("data/roundfish.csv",package="DATRAS")
+  file <- system.file("roundfish.csv",package="DATRAS")
   rf <- read.table(file)
   d2$Roundfish=NA;
   for(r in 1:nrow(rf))  d2$Roundfish[ d2$StatRec==as.character(rf[r,2]) ] = rf[r,1];
