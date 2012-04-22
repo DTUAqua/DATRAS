@@ -2,7 +2,7 @@
 ## Read ICES data and convert to .RData
 ## Remember that ICES use "-9" to code missing values !
 ## ---------------------------------------------------------------------------
-readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")){
+readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000"),strict=TRUE){
   cat("Locating lines with headers\n")
   print(system.time(lines <- readLines(file)))
   system.time(i <- grep("RecordType",lines))
@@ -22,6 +22,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
   ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
   if(is.null(d[[1]]$StatRec))d[[1]]$StatRec <- d[[1]]$AreaCode
   d <- addExtraVariables(d)
+  d <- fixMissingHaulIds(d,strict=strict)
   class(d) <- "DATRASraw"
   d
 }
@@ -193,14 +194,14 @@ summary.DATRASraw <- function(x){
 ##' and converts the resulting text file.
 ##' @title Read exchange data into R.
 ##' @param zipfile File to read.
+##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object.
-## ---------------------------------------------------------------------------
-readExchange <- function(zipfile){
+readExchange <- function(zipfile,strict=TRUE){
   tempdir <- tempdir()
   csvfile <- unzip(zipfile,exdir=tempdir)[1]
   cat("Processing csv file:\n")
   print(csvfile)
-  readICES(csvfile)
+  readICES(csvfile,strict=strict)
 }
 
 ## ---------------------------------------------------------------------------
@@ -212,11 +213,11 @@ readExchange <- function(zipfile){
 ##' @title Read all exchange files in a folder.
 ##' @param path File path. 
 ##' @param pattern Pattern that the exchange files match.
+##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object
-## ---------------------------------------------------------------------------
-readExchangeDir <- function(path=".",pattern=".zip"){
+readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
   zipfiles <- dir(path=path,pattern=pattern,recursive=TRUE,full.names=TRUE)
-  all <- lapply(zipfiles,readExchange)
+  all <- lapply(zipfiles,readExchange,strict=strict)
   do.call("c",all)
 }
 
@@ -351,7 +352,6 @@ addExtraVariables <- function(IBTS){
     IBTS[[i]]$Quarter <- factor(IBTS[[i]]$Quarter)
   }
   
-  
   IBTS
 }
 
@@ -362,6 +362,66 @@ reorderTimeLevels <- function(x){
   }
   x
 }
+
+## ---------------------------------------------------------------------------
+## Method for filling in missing haul ids in age data
+## ---------------------------------------------------------------------------
+fixMissingHaulIds<-function(d,strict=TRUE){
+  if(!any(is.na(d[[1]]$haul.id))) return(d);
+
+  d1=d[[1]][is.na(d[[1]]$haul.id),]
+  noNA=nrow(d1)
+    
+  d2=d[[2]][,c("StatRec","Year","Quarter","Country","Ship","haul.id","Roundfish")];  
+  d2$StatRec=as.character(d2$StatRec);
+  d1$AreaCode=as.character(d1$AreaCode);
+  d1$StatRec=d1$AreaCode
+
+  dtmp=d1[,-which(names(d1)=="haul.id")]
+  dtmp$rowno=1:nrow(dtmp)
+
+  dm=merge(dtmp,d2,all.x=TRUE,by=c("StatRec","Year","Quarter","Country","Ship"),sort=FALSE,suffixes=c("",".y"))
+  tab=table(dm$rowno);
+  if(length(tab)!=noNA) stop("something went wrong in FixMissingHaulIds");
+  uniqueRows=as.numeric(names(tab)[tab==1]);
+  nonUnique=as.numeric(names(tab)[tab>1]);
+  if(  (length(uniqueRows)+length(nonUnique))!=noNA) stop("something went wrong in FixMissingHaulIds 2");
+
+  dm=dm[sample(1:nrow(dm)),]; ## permute to get some more random assignments when duplicates are dropped
+  dm=dm[!duplicated(dm$rowno),]
+  dm=dm[order(dm$rowno),];
+  matchedUniquely=sum(!is.na(dm$haul.id))-length(nonUnique);
+  if(strict){
+    if(length(nonUnique>0)) dm[nonUnique,"haul.id"]=NA;
+    d[[1]][is.na(d[[1]]$haul.id),]$haul.id=dm$haul.id;
+    newnoNA=sum(is.na(d[[1]]$haul.id));
+    if(length(nonUnique>0)) warning(paste(noNA,"age data haul ids missing:",matchedUniquely,"entries could be matched uniquely to a haul, the rest (",newnoNA,") will be left as 'NA' and dropped by any subsequent subsetting"));
+    return(d);
+  }
+  
+  nomatch=dm[is.na(dm$haul.id),]
+  ##cat(nrow(nomatch), " are still unmatched - using roundfish area instead of rectangle\n")
+  dm=dm[!is.na(dm$haul.id),]
+
+  sel=which(nchar(nomatch$StatRec)==1)
+  nomatch$Roundfish=as.character(nomatch$Roundfish);
+  nomatch$Roundfish[sel]=nomatch$StatRec[sel]
+
+  dm2=merge(nomatch,d2,all.x=TRUE,by=c("Roundfish","Year","Quarter","Country","Ship"),sort=FALSE,suffixes=c(".x",""))
+  dm2=dm2[sample(1:nrow(dm2)),]; ## permute to get some more random assignments when duplicates are dropped
+  dm2=dm2[!duplicated(dm2$rowno),]
+
+  result=rbind( dm[,c("rowno","haul.id")],dm2[,c("rowno","haul.id")])
+  result=result[order(result$rowno),]
+
+  d[[1]][is.na(d[[1]]$haul.id),]$haul.id=result$haul.id;
+
+  newnoNA=sum(is.na(d[[1]]$haul.id));
+  if(length(nonUnique>0)) warning(paste(noNA,"age data haul ids missing:",matchedUniquely,"entries could be matched uniquely to a haul,",noNA-matchedUniquely-newnoNA," were assigned a random haul amongst matching candidates,", newnoNA," could not be matched any haul.\nUnmatched hauls were left as 'NA' and will be dropped by any subsequent subsetting."));
+
+  return(d);
+}
+
 
 ## ---------------------------------------------------------------------------
 ## Method for adding the length spectrum to the DATRASraw format
