@@ -401,17 +401,20 @@ fixMissingHaulIds<-function(d,strict=TRUE){
   
   nomatch=dm[is.na(dm$haul.id),]
   ##cat(nrow(nomatch), " are still unmatched - using roundfish area instead of rectangle\n")
-  dm=dm[!is.na(dm$haul.id),]
+  if(nrow(nomatch)>0){
+    dm=dm[!is.na(dm$haul.id),]
 
-  sel=which(nchar(nomatch$StatRec)==1)
-  nomatch$Roundfish=as.character(nomatch$Roundfish);
-  nomatch$Roundfish[sel]=nomatch$StatRec[sel]
+    sel=which(nchar(nomatch$StatRec)==1)
+    nomatch$Roundfish=as.character(nomatch$Roundfish);
+    nomatch$Roundfish[sel]=nomatch$StatRec[sel]
+    
+    dm2=merge(nomatch,d2,all.x=TRUE,by=c("Roundfish","Year","Quarter","Country","Ship"),sort=FALSE,suffixes=c(".x",""))
+    dm2=dm2[sample(1:nrow(dm2)),]; ## permute to get some more random assignments when duplicates are dropped
+    dm2=dm2[!duplicated(dm2$rowno),]
 
-  dm2=merge(nomatch,d2,all.x=TRUE,by=c("Roundfish","Year","Quarter","Country","Ship"),sort=FALSE,suffixes=c(".x",""))
-  dm2=dm2[sample(1:nrow(dm2)),]; ## permute to get some more random assignments when duplicates are dropped
-  dm2=dm2[!duplicated(dm2$rowno),]
-
-  result=rbind( dm[,c("rowno","haul.id")],dm2[,c("rowno","haul.id")])
+    result=rbind( dm[,c("rowno","haul.id")],dm2[,c("rowno","haul.id")])
+  } else result=dm[,c("rowno","haul.id")];
+  
   result=result[order(result$rowno),]
 
   d[[1]][is.na(d[[1]]$haul.id),]$haul.id=result$haul.id;
