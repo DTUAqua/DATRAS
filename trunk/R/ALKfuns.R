@@ -36,9 +36,11 @@ fitALKone<-function(a,ages,AL,model,gamma,autoChooseK=FALSE,useBIC=FALSE,varCof=
     if(!varCof){
       k = min(maxK, uniqueCovs-1);
       f = as.formula(paste("cra~LngtCm+s(lon,lat,k=",k,",bs='ts')"));
+      if(uniqueCovs<10) f=as.formula("cra~LngtCm");
     } else {
         k = min(maxK, uniqueCovs/2-1);
-        f = as.formula(paste("cra~s(lon,lat,by=LngtCm,k=",k,",bs='ts')+s(lon,lat,k=",k,",bs='ts')"));  
+        f = as.formula(paste("cra~s(lon,lat,by=LngtCm,k=",k,",bs='ts')+s(lon,lat,k=",k,",bs='ts')"));
+        if(uniqueCovs<10) f=as.formula("cra~LngtCm");
       }
     if(useBIC) gamma = log( sum( myd$NoAtALK)) / 2;
   }
