@@ -108,6 +108,7 @@ predict.ALKmodel<-function(x,newdata=NULL,type="Nage",mc.cores=1){
   if(!is.null(newdata)){
       dat=newdata;
       checkSpectrum(dat)
+      attr(x,"data")<-dat;
     }
   ages=attr(x,"ages");
   len=attr(dat,"cm.breaks")[1:ncol(dat$N)];
