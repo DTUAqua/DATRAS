@@ -14,6 +14,9 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     ans$StNo <- as.character(ans$StNo)
     ans
   })
+  ## Data components must come in specific order
+  names(d) <- sapply(d,function(x)as.character(x$RecordType[1]))
+  d <- d[c("CA", "HH", "HL")]
   cat("Classes of the variables\n")
   print(lapply(d,function(x)sapply(x,class)))
   if(sum(sapply(d,nrow)) + length(i) != length(lines))stop("csv file appears to be corrupt.")
