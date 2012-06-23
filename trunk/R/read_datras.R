@@ -253,6 +253,9 @@ c.DATRASraw <- function(...){
   args <- c(list("rbind"),args)
   ans <- do.call("Map",args)
   ans <- reorderTimeLevels(ans)
+  ## Note that rbind drops all zero-row data.frames - hence levels of zero-length
+  ## factor will be dropped. Have to fix this:
+  ans <- refactorHaulLevels(ans)
   class(ans) <- "DATRASraw"
   ans
 }
@@ -364,6 +367,13 @@ reorderTimeLevels <- function(x){
     x[[i]]$Quarter <- factor(x[[i]]$Quarter,levels=sort(levels(x[[i]]$Quarter)))
   }
   x
+}
+
+refactorHaulLevels <- function(df){
+  lev <- levels(df[[2]]$haul.id)
+  df[[1]]$haul.id <- factor(df[[1]]$haul.id,levels=lev)
+  df[[3]]$haul.id <- factor(df[[3]]$haul.id,levels=lev)
+  df
 }
 
 ## ---------------------------------------------------------------------------
