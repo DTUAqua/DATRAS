@@ -2,10 +2,14 @@
 \alias{readExchange}
 \title{Read exchange data into R.}
 \usage{
-  readExchange(zipfile)
+  readExchange(zipfile, strict = TRUE)
 }
 \arguments{
   \item{zipfile}{File to read.}
+
+  \item{strict}{if TRUE, missing haul ids in age data
+  should be unqiuely matched when filled in, if FALSE a
+  random match will be assigned.}
 }
 \value{
   DATRASraw object.

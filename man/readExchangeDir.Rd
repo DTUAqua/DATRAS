@@ -2,12 +2,17 @@
 \alias{readExchangeDir}
 \title{Read all exchange files in a folder.}
 \usage{
-  readExchangeDir(path = ".", pattern = ".zip")
+  readExchangeDir(path = ".", pattern = ".zip",
+    strict = TRUE)
 }
 \arguments{
   \item{path}{File path.}
 
   \item{pattern}{Pattern that the exchange files match.}
+
+  \item{strict}{if TRUE, missing haul ids in age data
+  should be unqiuely matched when filled in, if FALSE a
+  random match will be assigned.}
 }
 \value{
   DATRASraw object

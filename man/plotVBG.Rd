@@ -1,0 +1,64 @@
+\name{plotVBG}
+\alias{plotVBG}
+\title{Cohort plot}
+\usage{
+  plotVBG(d,
+    model = list(k = 0.12, Linf = 135, L0 = 1, t0 = 0.5),
+    by = paste(Year, Quarter), scale = 1,
+    xlim = c(min(d$abstime) - 1, max(d$abstime)),
+    ylim = c(0, max(d[["HL"]]$LngtCm, na.rm = TRUE)),
+    col = grey(0.9),
+    yearClasses = (floor(xlim[1]) - 10):ceiling(xlim[2]),
+    mar = c(0, 0, 0, 0), oma = c(5, 5, 5, 5),
+    ylab = "Length (cm)", ...)
+}
+\arguments{
+  \item{d}{DATRASraw objects to put together.}
+
+  \item{model}{list containing von Bertalanffy growth
+  parameters.}
+
+  \item{by}{Grouping variable to define the individual
+  size-spectra.}
+
+  \item{scale}{Control height of spectra.}
+
+  \item{xlim}{Time range in years.}
+
+  \item{ylim}{Size range in cm.}
+
+  \item{col}{Color of the histograms. Recycled if shorter
+  than number of histograms.}
+
+  \item{yearClasses}{Growth curves are shown for these year
+  classes.}
+
+  \item{mar}{Controls plot margin.}
+
+  \item{oma}{Controls plot outer margin.}
+}
+\value{
+  NULL
+}
+\description{
+  Plot size-spectra with von Bertalanffy growth
+  trajectories.
+}
+\details{
+  This function draws empirical size distributions of a
+  DATRASraw object in order to follow cohorts using the von
+  Bertalanffy growth model.
+}
+\examples{
+\dontshow{
+file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
+file2 <- system.file("exchange","Exchange3.zip",package="DATRAS")
+x <- readExchange(file1)
+y <- readExchange(file2)
+z <- c(x,y)
+d <- subset(z,Species=="Gadus morhua")
+}
+d <- addSpectrum(d)
+plotVBG(d)
+}
+
