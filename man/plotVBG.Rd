@@ -36,6 +36,10 @@
   \item{mar}{Controls plot margin.}
 
   \item{oma}{Controls plot outer margin.}
+
+  \item{ylab}{y-axis label}
+
+  \item{...}{passed to par()}
 }
 \value{
   NULL

@@ -2,7 +2,7 @@
 \alias{anova.ALKmodel}
 \title{Compute approximate likelihood ratio test for the equality of two age-length keys.}
 \usage{
-  anova.ALKmodel(m1, m2)
+  anova.ALKmodel(object, object2, ...)
 }
 \arguments{
   \item{m1}{An object of class 'ALKmodel'}

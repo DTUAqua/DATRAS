@@ -2,7 +2,7 @@
 \alias{AIC.ALKmodel}
 \title{Compute Akaike Information Criterion for an age-length key model.}
 \usage{
-  AIC.ALKmodel(x, k = 2)
+  AIC.ALKmodel(object, ..., k = 2)
 }
 \arguments{
   \item{x}{an ALKmodel object.}
