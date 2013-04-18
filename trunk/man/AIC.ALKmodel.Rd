@@ -5,9 +5,11 @@
   AIC.ALKmodel(object, ..., k = 2)
 }
 \arguments{
-  \item{x}{an ALKmodel object.}
+  \item{object}{an ALKmodel object.}
 
   \item{k}{Penalty for number of parameters}
+
+  \item{...}{unused}
 }
 \value{
   AIC value.

@@ -8,6 +8,8 @@
   \item{object}{An object of class 'ALKmodel'}
 
   \item{object2}{An object of class 'ALKmodel'}
+
+  \item{...}{unused}
 }
 \value{
   a p-value.
