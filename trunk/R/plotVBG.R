@@ -15,6 +15,8 @@
 ##' @param yearClasses Growth curves are shown for these year classes.
 ##' @param mar Controls plot margin.
 ##' @param oma Controls plot outer margin.
+##' @param ylab y-axis label
+##' @param ... passed to par()
 ##' @return NULL
 ##' @examples
 ##' \dontshow{

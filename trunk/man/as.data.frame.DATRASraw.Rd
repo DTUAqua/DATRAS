@@ -2,8 +2,8 @@
 \alias{as.data.frame.DATRASraw}
 \title{Convert DATRASraw to data.frame suitable for statistical analysis.}
 \usage{
-  as.data.frame.DATRASraw(x, format = c("long", "wide"),
-    response, cleanup = TRUE, ...)
+  as.data.frame.DATRASraw(x, ...,
+    format = c("long", "wide"), response, cleanup = TRUE)
 }
 \arguments{
   \item{x}{DATRASraw object to be converted.}
