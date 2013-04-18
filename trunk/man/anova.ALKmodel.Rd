@@ -5,9 +5,9 @@
   anova.ALKmodel(object, object2, ...)
 }
 \arguments{
-  \item{m1}{An object of class 'ALKmodel'}
+  \item{object}{An object of class 'ALKmodel'}
 
-  \item{m2}{An object of class 'ALKmodel'}
+  \item{object2}{An object of class 'ALKmodel'}
 }
 \value{
   a p-value.

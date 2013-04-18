@@ -210,8 +210,8 @@ addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~po
 }
 
 ##' @title Compute approximate likelihood ratio test for the equality of two age-length keys. 
-##' @param m1 An object of class 'ALKmodel'
-##' @param m2 An object of class 'ALKmodel'
+##' @param object An object of class 'ALKmodel'
+##' @param object2 An object of class 'ALKmodel'
 ##' @return a p-value.
 anova.ALKmodel<-function(object,object2,...){
   m1 <- object
