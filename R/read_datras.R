@@ -146,6 +146,7 @@ print.DATRASraw <- function(x,...){
 ##' @param i Integer vector
 ##' @return DATRASraw object
 ##' @rdname indexSubset
+##' @usage x[i]
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")

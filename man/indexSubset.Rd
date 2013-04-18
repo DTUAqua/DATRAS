@@ -2,7 +2,7 @@
 \alias{[.DATRASraw}
 \title{Sample unit subset.}
 \usage{
-  [.DATRASraw(x, i)
+  x[i]
 }
 \arguments{
   \item{x}{DATRASraw object}

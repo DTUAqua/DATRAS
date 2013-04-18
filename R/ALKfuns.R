@@ -98,10 +98,11 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
 }
 
 ##' @title Predict method for ALKmodel objects
-##' @param x An object of class 'ALKmodel'
+##' @param object An object of class 'ALKmodel'
 ##' @param newdata optionally, a DATRASraw object to predict 
 ##' @param type the type of prediction required. The default is "Nage", which is numbers-at-age for each haul. The other option is "ALK", which gives a list of age-length keys, one for each haul. 
 ##' @param mc.cores use this number of cores (parallel computation via multicore library)
+##' @param ... unused
 ##' @return A matrix if type equals "Nage", and a list of matrices if type equals "ALK".
 predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
   x <- object
@@ -212,6 +213,7 @@ addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~po
 ##' @title Compute approximate likelihood ratio test for the equality of two age-length keys. 
 ##' @param object An object of class 'ALKmodel'
 ##' @param object2 An object of class 'ALKmodel'
+##' @param ... unused
 ##' @return a p-value.
 anova.ALKmodel<-function(object,object2,...){
   m1 <- object
@@ -235,8 +237,9 @@ anova.ALKmodel<-function(object,object2,...){
 }
 
 ##' @title Compute Akaike Information Criterion for an age-length key model.
-##' @param x an ALKmodel object.
-##' @param k Penalty for number of parameters 
+##' @param object an ALKmodel object.
+##' @param k Penalty for number of parameters
+##' @param ... unused
 ##' @return AIC value.
 AIC.ALKmodel<-function(object,..., k=2){
   x <- object
