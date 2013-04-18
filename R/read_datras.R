@@ -250,6 +250,7 @@ c.DATRASraw <- function(...){
   }
   args <- list(...)
   testUniqueHaulID(args)
+  args <- lapply(args,unclass) ## because do_mapply dispatch on length
   args <- c(list("rbind"),args)
   ans <- do.call("Map",args)
   ans <- reorderTimeLevels(ans)
@@ -567,6 +568,16 @@ plot.DATRASraw <- function(x,add=FALSE,pch=16,
                            xlim=NULL,
                            ylim=NULL,
                            ...){
+  ## Experiment
+  if(FALSE){
+    ## Overwrite: icesSquare(), icesSquare2coord(), x[[2]]$StatRec
+    sq <- names(pol)
+    rglon <- lapply(pol,function(x)range(x$lon))
+    rglat <- lapply(pol,function(x)range(x$lat))
+    pollist <- Map(function(x,y)data.frame(lon=x[c(1,1,2,2)],lat=y[c(1,2,2,1)]),rglon,rglat)
+    
+  }
+  ## End experiment
   sq <- unique(icesSquare(x))
   pol <- icesSquare2coord(sq,"polygons")
   point <- icesSquare2coord(sq,"midpoint")
