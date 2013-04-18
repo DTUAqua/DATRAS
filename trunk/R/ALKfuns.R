@@ -103,7 +103,8 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
 ##' @param type the type of prediction required. The default is "Nage", which is numbers-at-age for each haul. The other option is "ALK", which gives a list of age-length keys, one for each haul. 
 ##' @param mc.cores use this number of cores (parallel computation via multicore library)
 ##' @return A matrix if type equals "Nage", and a list of matrices if type equals "ALK".
-predict.ALKmodel<-function(x,newdata=NULL,type="Nage",mc.cores=1){
+predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
+  x <- object
   dat=attr(x,"data");
   if(!is.null(newdata)){
       dat=newdata;
@@ -212,7 +213,9 @@ addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~po
 ##' @param m1 An object of class 'ALKmodel'
 ##' @param m2 An object of class 'ALKmodel'
 ##' @return a p-value.
-anova.ALKmodel<-function(m1,m2){
+anova.ALKmodel<-function(object,object2,...){
+  m1 <- object
+  m2 <- object2
   
   getEdf<-function(m) sum(m$edf)
   myll<-function(m) logLik(m)
@@ -235,7 +238,8 @@ anova.ALKmodel<-function(m1,m2){
 ##' @param x an ALKmodel object.
 ##' @param k Penalty for number of parameters 
 ##' @return AIC value.
-AIC.ALKmodel<-function(x, k=2){
+AIC.ALKmodel<-function(object,..., k=2){
+  x <- object
   getEdf<-function(m) sum(m$edf)
   myll<-function(m) logLik(m)
   ll=sum( unlist(  lapply(x,myll)))

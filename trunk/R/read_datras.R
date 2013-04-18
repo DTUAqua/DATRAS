@@ -181,7 +181,8 @@ print.DATRASraw <- function(x,...){
 }
 length.DATRASraw <- function(x)nrow(x[[2]])
 
-summary.DATRASraw <- function(x){
+summary.DATRASraw <- function(object, ...){
+  x <- object
   print(x);
   cat("Number of hauls by year and quarter:\n")
   print(xtabs( ~ Year + Quarter, data=x[[2]]));
@@ -492,8 +493,8 @@ getAccuracyCM <- function(x){
 ##' covariates.
 ##' @S3method as.data.frame DATRASraw
 ## ---------------------------------------------------------------------------
-as.data.frame.DATRASraw <- function(x,format=c("long","wide"),response,
-                                    cleanup=TRUE,...){
+as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
+                                    cleanup=TRUE){
   format <- match.arg(format)
   ## Add species information
   x$Species <- paste(levels(factor(x[[3]]$Species)),collapse="|")
