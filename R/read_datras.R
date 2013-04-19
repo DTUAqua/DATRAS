@@ -163,7 +163,7 @@ print.DATRASraw <- function(x,...){
     ## Special workaround for duplicated case:
     warning("Subset with haul duplication - hauls are renamed")
     keep <- as.character(x[[2]]$haul.id)[i]
-    ind <- lapply(x,function(x)seq.int(length=nrow(x)))
+    ind <- lapply(x,function(x)seq.int(length.out=nrow(x)))
     hid <- lapply(x,function(y)factor(y$haul.id,levels=levels(x[[2]]$haul.id)))
     splind <- Map(split,ind,hid)
     splhid <- Map(split,lapply(hid,as.character),hid)
