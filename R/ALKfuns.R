@@ -104,6 +104,8 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
 ##' @param mc.cores use this number of cores (parallel computation via multicore library)
 ##' @param ... unused
 ##' @return A matrix if type equals "Nage", and a list of matrices if type equals "ALK".
+##' @method predict ALKmodel
+##' @S3method predict ALKmodel
 predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
   x <- object
   dat=attr(x,"data");
@@ -215,6 +217,8 @@ addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~po
 ##' @param object2 An object of class 'ALKmodel'
 ##' @param ... unused
 ##' @return a p-value.
+##' @method anova ALKmodel
+##' @S3method anova ALKmodel
 anova.ALKmodel<-function(object,object2,...){
   m1 <- object
   m2 <- object2
@@ -241,6 +245,8 @@ anova.ALKmodel<-function(object,object2,...){
 ##' @param k Penalty for number of parameters
 ##' @param ... unused
 ##' @return AIC value.
+##' @method AIC ALKmodel
+##' @S3method AIC ALKmodel
 AIC.ALKmodel<-function(object,..., k=2){
   x <- object
   getEdf<-function(m) sum(m$edf)

@@ -2,7 +2,7 @@
 \alias{subset.DATRASraw}
 \title{Subsetting a DATRASraw object.}
 \usage{
-  subset.DATRASraw(x, ..., na.rm = TRUE)
+  \method{subset}{DATRASraw} (x, ..., na.rm = TRUE)
 }
 \arguments{
   \item{x}{Take subset of this dataset.}

@@ -50,6 +50,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
 ##' @param ... One or more subset criteria.
 ##' @param na.rm Discard missing values in subset criterion?
 ##' @return The reduced dataset.
+##' @method subset DATRASraw
 ##' @S3method subset DATRASraw
 ##' @examples
 ##' \dontshow{
@@ -237,6 +238,8 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' @title Combine multiple DATRASraw objects 
 ##' @param ... DATRASraw objects to put together.
 ##' @return Merged dataset.
+##' @method c DATRASraw
+##' @S3method c DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -493,6 +496,7 @@ getAccuracyCM <- function(x){
 ##' @param ... Not used.
 ##' @return data.frame with one line for each response along with associated
 ##' covariates.
+##' @method as.data.frame DATRASraw
 ##' @S3method as.data.frame DATRASraw
 ## ---------------------------------------------------------------------------
 as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
@@ -553,6 +557,8 @@ as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
 ##' @param xlim Longitude range of plot.
 ##' @param ylim Latitude range of plot.
 ##' @param ... Controlling plot of positions.
+##' @method plot DATRASraw
+##' @S3method plot DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
