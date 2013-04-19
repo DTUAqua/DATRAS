@@ -17,3 +17,16 @@
 ##' @references \url{http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx}
 ##' @example demo/intro.R
 NULL
+
+
+##' Internal DATRAS Functions
+##'
+##' Internal DATRAS functions
+##'
+##' These are not to be called by the user (or in some cases are just 
+##' waiting for proper documentation to be written :).
+##'
+##' @name DATRAS-internal
+##' @aliases addExtraVariables addHaulID addSpectrum checkSpectrum fixMissingHaulIds getAccuracyCM length.DATRASraw print.DATRASraw readICES refactorHaulLevels reorderTimeLevels summary.DATRASraw tryCatch.W.E xtraVars $.DATRASraw $<-.DATRASraw
+##' @rdname DATRAS-internal
+NULL

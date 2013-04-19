@@ -626,6 +626,15 @@ plot.DATRASraw <- function(x,add=FALSE,pch=16,
 ## expr={commands to do a plot}
 ## xlim and ylim of this plot.
 ## Fit the plot within polygon "pol"
+##' Add new plot on existing plot.
+##'
+##' Add new plot on existing plot.
+##' @title Add small plot on existing plot.
+##' @param expr Expression of plot commands producing new plot.
+##' @param xlim New plot x-range.
+##' @param ylim New plot y-range.
+##' @param pol Polygon defining the sub-window wrt. large plot coordinate system.
+##' @return Output of evaluated \code{expr}
 tilePlot <- function(expr,xlim,ylim,pol){
   usr.old <- par("usr")
   on.exit(par(usr=usr.old))
