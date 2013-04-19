@@ -2,7 +2,7 @@
 \alias{c.DATRASraw}
 \title{Combine multiple DATRASraw objects}
 \usage{
-  c.DATRASraw(...)
+  \method{c}{DATRASraw} (...)
 }
 \arguments{
   \item{...}{DATRASraw objects to put together.}

@@ -2,8 +2,8 @@
 \alias{predict.ALKmodel}
 \title{Predict method for ALKmodel objects}
 \usage{
-  predict.ALKmodel(object, newdata = NULL, type = "Nage",
-    mc.cores = 1, ...)
+  \method{predict}{ALKmodel} (object, newdata = NULL,
+    type = "Nage", mc.cores = 1, ...)
 }
 \arguments{
   \item{object}{An object of class 'ALKmodel'}

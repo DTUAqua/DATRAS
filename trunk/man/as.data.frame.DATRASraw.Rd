@@ -2,7 +2,7 @@
 \alias{as.data.frame.DATRASraw}
 \title{Convert DATRASraw to data.frame suitable for statistical analysis.}
 \usage{
-  as.data.frame.DATRASraw(x, ...,
+  \method{as.data.frame}{DATRASraw} (x, ...,
     format = c("long", "wide"), response, cleanup = TRUE)
 }
 \arguments{

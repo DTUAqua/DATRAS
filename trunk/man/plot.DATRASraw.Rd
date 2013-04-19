@@ -3,7 +3,7 @@
 \alias{points.DATRASraw}
 \title{Plot map with haul positions.}
 \usage{
-  plot.DATRASraw(x, add = FALSE, pch = 16,
+  \method{plot}{DATRASraw} (x, add = FALSE, pch = 16,
     plot.squares = !add, plot.map = !add,
     plot.points = TRUE, plot.response = TRUE, xlim = NULL,
     ylim = NULL, ...)
