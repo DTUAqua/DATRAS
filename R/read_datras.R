@@ -639,6 +639,8 @@ tilePlot <- function(expr,xlim,ylim,pol){
 }
 ##' @title Positions can be added to existing plot.
 ##' @rdname plot.DATRASraw
+##' @method points DATRASraw
+##' @S3method points DATRASraw
 points.DATRASraw <- function(x,...){
   plot(x,add=TRUE,...)
 }
