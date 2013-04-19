@@ -8,7 +8,7 @@
     plot.points = TRUE, plot.response = TRUE, xlim = NULL,
     ylim = NULL, ...)
 
-  points.DATRASraw(x, ...)
+  \method{points}{DATRASraw} (x, ...)
 }
 \arguments{
   \item{x}{DATRASraw object.}
