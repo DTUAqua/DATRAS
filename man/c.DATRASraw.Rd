@@ -17,7 +17,12 @@
   This function combines DATRASraw objects by
   \code{rbind}ing each of the three components of the
   objects. The method is useful when downloading large
-  amounts of data in small chunks.
+  amounts of data in small chunks. If the same haul.id is
+  present within different datasets the method will stop.
+  If a variable name is only present in some of the
+  datasets, the variable will be added to the remaining
+  datasets (filled with NA) and a warning will be
+  triggered.
 }
 \examples{
 \dontshow{

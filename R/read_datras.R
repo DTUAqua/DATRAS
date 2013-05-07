@@ -234,6 +234,9 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' This function combines DATRASraw objects by \code{rbind}ing each of the
 ##' three components of the objects.
 ##' The method is useful when downloading large amounts of data in small chunks.
+##' If the same haul.id is present within different datasets the method will stop.
+##' If a variable name is only present in some of the datasets, the variable will be
+##' added to the remaining datasets (filled with NA) and a warning will be triggered.
 ##' 
 ##' @title Combine multiple DATRASraw objects 
 ##' @param ... DATRASraw objects to put together.
@@ -257,6 +260,24 @@ c.DATRASraw <- function(...){
   args <- list(...)
   testUniqueHaulID(args)
   args <- lapply(args,unclass) ## because do_mapply dispatch on length
+  ## Add missing variable names with warning
+  argnames <- Map(Map,list("names"),args)
+  union <- function(...)unique(c(...))
+  unionNames <- do.call("Map",c(list("union"),argnames))
+  addMissingVariables <- function(x){
+    lapply(1:3,function(i){
+      ans <- x[[i]]
+      missingVariables <- setdiff( unionNames[[i]],names(ans) )
+      if(length(missingVariables)>0){
+        warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
+                paste(missingVariables,collapse=", "),
+                ". NA will be inserted.")
+        ans[missingVariables] <- NA
+      }
+      ans
+    })
+  }
+  args <- lapply(args,addMissingVariables)
   args <- c(list("rbind"),args)
   ans <- do.call("Map",args)
   ans <- reorderTimeLevels(ans)
