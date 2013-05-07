@@ -265,7 +265,7 @@ c.DATRASraw <- function(...){
   union <- function(...)unique(c(...))
   unionNames <- do.call("Map",c(list("union"),argnames))
   addMissingVariables <- function(x){
-    lapply(1:3,function(i){
+    out <- lapply(1:3,function(i){
       ans <- x[[i]]
       missingVariables <- setdiff( unionNames[[i]],names(ans) )
       if(length(missingVariables)>0){
@@ -276,6 +276,8 @@ c.DATRASraw <- function(...){
       }
       ans
     })
+    names(out) <- names(x)
+    out
   }
   args <- lapply(args,addMissingVariables)
   args <- c(list("rbind"),args)
