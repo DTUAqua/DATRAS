@@ -314,6 +314,12 @@ addExtraVariables <- function(IBTS){
   file <- system.file("SpeciesTable.csv",package="DATRAS")
   specdat <- read.csv(file,skip=3,strip.white = TRUE)
   SpecCode2species <- structure(as.character(specdat$Species), names=specdat$TSN.code)
+
+  file <- system.file("WoRMSTable.csv",package="DATRAS")
+  specdat <- read.csv(file)
+  WSpecCode2species <- structure(as.character(specdat$ScientificName_WoRMS),
+                                 names=specdat$WoRMS_AphiaID)
+
   lookup <- function(x,table){
     x <- factor(x)
     levels(x) <- table[levels(x)]
@@ -322,7 +328,14 @@ addExtraVariables <- function(IBTS){
   mytransform <- function(d3){
     d3 <- transform(d3,
                     LngtCm = lookup(LngtCode,LngtCode2cm) * d3$LngtClas, ## "d3$LngtClass" corresponds to "d1$LngtClas" !?
-                    Species = lookup(SpecCode,SpecCode2species) ) 
+                    ##Species = lookup(SpecCode,SpecCode2species)
+                    Species = factor(
+                      ifelse(as.character(SpecCodeType)=="W",
+                             as.character( lookup(SpecCode,WSpecCode2species) ),
+                             as.character( lookup(SpecCode,SpecCode2species) )
+                      )
+                      )
+                    )
     d3
   }
   d3 <- mytransform(d3)
