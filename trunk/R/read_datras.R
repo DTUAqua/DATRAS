@@ -689,3 +689,34 @@ tilePlot <- function(expr,xlim,ylim,pol){
 points.DATRASraw <- function(x,...){
   plot(x,add=TRUE,...)
 }
+
+##' Add spatial data from a shapefile to a DATRASraw object.
+##' Longitude-latitude coordinates from DATRASraw are used to
+##' lookup the information in the shapefile. Requires the package
+##' \code{maptools}.
+##'
+##' @title Add spatial data from shapefile.
+##' @param d DATRASraw object
+##' @param shape Shapefile or valid filename of existing shapefile.
+##' @param select Vector of variable names to select from shapefile (default is to select all names)
+##' @param ... Passed to \code{readShapeSpatial}
+##' @return Modified DATRASraw object
+addSpatialData <- function(d,shape,select=NULL,...){
+  require(maptools)
+  if(is.character(shape)){
+    if(file.exists(shape)){
+      shape <- readShapeSpatial(shape)
+    }
+  }
+  tmp <- d[[2]]
+  coordinates(tmp) <- ~lon+lat
+  xtra <- over(tmp, shape)
+  if(!is.null(select))xtra <- xtra[select]
+  nm <- names(xtra)
+  if(length(intnm <- intersect(names(d[[2]]),nm))){
+    print(intnm)
+    stop("Some selected names from shapefile are already in DATRASraw")
+  }
+  d[[2]] <- cbind(d[[2]],xtra)
+  d
+}
