@@ -14,7 +14,8 @@ Suggests:
     mapdata,
     maps,
     mgcv,
-    multicore
+    multicore,
+    maptools
 License: GPL
 LazyLoad: yes
 Collate:
