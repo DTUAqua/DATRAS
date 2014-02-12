@@ -273,6 +273,7 @@ plotALKraw<-function(x,minAge,maxAge,truncAt=0,type="l",ylab="Proportion",xlab="
   x[[1]]$AgeA <- x[[1]]$Age;
   x[[1]]$AgeA[x[[1]]$AgeA < minAge] = minAge;
   x[[1]]$AgeA[x[[1]]$AgeA > maxAge] = maxAge;
+  x[[1]]$AgeA = factor(x[[1]]$AgeA, levels=as.character(minAge:maxAge));
   tab = xtabs(NoAtALK~sizeGroup+AgeA,data=x[[1]]);
   propTab=tab/rowSums(tab)
   propTab[propTab<truncAt]=NA;
