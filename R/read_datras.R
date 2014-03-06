@@ -708,9 +708,17 @@ addSpatialData <- function(d,shape,select=NULL,...){
       shape <- readShapeSpatial(shape)
     }
   }
-  tmp <- d[[2]]
+  i <- complete.cases(d[[2]][c("lon","lat")])
+  tmp <- d[[2]][i,,drop=FALSE]
   coordinates(tmp) <- ~lon+lat
   xtra <- over(tmp, shape)
+  if(any(!i)){
+    warning(paste(sum(!i),"incomplete lon/lat pairs will get NA as spatial data."))
+    j <- 1:nrow(d[[2]])
+    j[i] <- 1:sum(i)
+    j[!i] <- NA
+    xtra <- xtra[j,,drop=FALSE]
+  }  
   if(!is.null(select))xtra <- xtra[select]
   nm <- names(xtra)
   if(length(intnm <- intersect(names(d[[2]]),nm))){
