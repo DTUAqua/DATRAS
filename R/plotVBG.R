@@ -6,7 +6,8 @@
 ##' 
 ##' @title Cohort plot
 ##' @param d DATRASraw objects to put together.
-##' @param model list containing von Bertalanffy growth parameters.
+##' @param model list containing von Bertalanffy growth parameters. By default
+##' a simple fit will be performed based on the data.
 ##' @param by Grouping variable to define the individual size-spectra.
 ##' @param scale Control height of spectra.
 ##' @param xlim Time range in years.
@@ -31,7 +32,7 @@
 ##' plotVBG(d)
 ## ---------------------------------------------------------------------------
 plotVBG <- function(d,
-                    model = list(k=0.12,Linf=135,L0=1,t0=0.5),
+                    model = fitvbg(d),
                     by = paste(Year,Quarter),
                     scale=1,
                     xlim=c(min(d$abstime)-1,max(d$abstime)),
@@ -105,3 +106,38 @@ plotVBG <- function(d,
   NULL
 }
 
+
+##' Fit von Bertalanffy growth model to age-length data.
+##'
+##' Note: Fitting is done using non linear least squares which assumes
+##' constant variance of size samples given age.
+##' @title Fit von Bertalanffy growth model to age-length data.
+##' @param d DATRASraw object
+##' @param L0 Length at time t0
+##' @param plot Plot the fitted vbg curve?
+##' @return list with parameters
+fitvbg <- function(d,L0=0,plot=FALSE){
+  ## Lookup time of year by haul.id
+  timeOfYear <- d[["HH"]]$timeOfYear
+  names(timeOfYear) <- as.character(d[["HH"]]$haul.id)
+  ## Convert to fractional age
+  fracAge <- d[["CA"]]$Age+timeOfYear[as.character(d[["CA"]]$haul.id)]
+  size <- d[["CA"]]$LngtCm
+  ## Initial Guess: Fit linear model
+  slope <- coef(lm(size~fracAge))["fracAge"]
+  names(slope) <- NULL
+  Linf <- max(size)
+  k <- slope/Linf
+  start <- c(k=k,Linf=Linf,t0=0.1)
+  fit <- nls(size ~ Linf - (Linf - L0) * exp(-k * (fracAge - t0)),
+             start=start)
+  ans <- as.list(coef(fit))
+  ans$L0 <- L0
+  if(plot){
+    plot(fracAge,size,xlab="age")
+    age <- seq(0,ceiling(max(fracAge,na.rm=TRUE)),length=101)
+    y <- predict(fit,data.frame(fracAge=age))
+    lines(age,y,col="red",lwd=3)
+  }
+  ans
+}

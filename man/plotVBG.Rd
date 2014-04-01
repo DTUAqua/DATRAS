@@ -2,9 +2,8 @@
 \alias{plotVBG}
 \title{Cohort plot}
 \usage{
-  plotVBG(d,
-    model = list(k = 0.12, Linf = 135, L0 = 1, t0 = 0.5),
-    by = paste(Year, Quarter), scale = 1,
+  plotVBG(d, model = fitvbg(d), by = paste(Year, Quarter),
+    scale = 1,
     xlim = c(min(d$abstime) - 1, max(d$abstime)),
     ylim = c(0, max(d[["HL"]]$LngtCm, na.rm = TRUE)),
     col = grey(0.9),
@@ -16,7 +15,8 @@
   \item{d}{DATRASraw objects to put together.}
 
   \item{model}{list containing von Bertalanffy growth
-  parameters.}
+  parameters. By default a simple fit will be performed
+  based on the data.}
 
   \item{by}{Grouping variable to define the individual
   size-spectra.}
