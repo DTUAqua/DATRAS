@@ -17,6 +17,28 @@ if(count($argv)<2){
   print("Example: php datras.php NS-IBTS 2008 \n");
   print("If [year] is omitted, then all years are downloaded\n");
   print("\n");
+  print("Available surveys:\n");
+
+  $url = "http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx";
+  $ckfile = tempnam("/tmp", "CURLCOOKIE");
+  $useragent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.2 (KHTML, like Gecko) Chrome/5.0.342.3 Safari/533.2';
+  
+  $username = "XXXXXXXXXX";
+  $password = "XXXXXXXXXX";
+
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_COOKIEJAR, $ckfile);
+  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
+  
+  $html = curl_exec($ch);
+  
+  curl_close($ch);
+
+  preg_match_all('~<option.*value=".*">(.*?)</option>~', $html, $surveys);
+  for($i=11;$i<count($surveys[1]); $i++)
+    print($surveys[1][$i] . "\n");
   die();
 }
 
