@@ -11,6 +11,8 @@
   \item{minAge}{minimum age group to consider}
 
   \item{maxAge}{maximum age group (plus group)}
+
+  \item{alk.type}{method to calculate age-length key}
 }
 \value{
   A vector with weight-at-age
