@@ -54,6 +54,7 @@ rawALK <- function(d,minAge,maxAge){
 ##' @param d DATRASraw object
 ##' @param minAge minimum age group to consider
 ##' @param maxAge maximum age group (plus group)
+##' @param alk.type method to calculate age-length key
 ##' @return A vector with weight-at-age
 weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
   alk.type <- match.arg(alk.type)
