@@ -5,7 +5,7 @@
   readExchange(zipfile, strict = TRUE)
 }
 \arguments{
-  \item{zipfile}{File to read.}
+  \item{zipfile}{File(s) to read.}
 
   \item{strict}{if TRUE, missing haul ids in age data
   should be unqiuely matched when filled in, if FALSE a
@@ -15,12 +15,13 @@
   DATRASraw object.
 }
 \description{
-  Unpack and read raw exchange zipfile.
+  Unpack and read raw exchange zipfile(s).
 }
 \details{
   The raw exchange files from ICES are zipfiles (without
   zip extension). This function unzips the file to a
   temporary directory and then reads and converts the
-  resulting text file.
+  resulting text file. If multiple filenames are supplied,
+  all files are read and combined to a single object.
 }
 

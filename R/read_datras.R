@@ -194,16 +194,19 @@ summary.DATRASraw <- function(object, ...){
 }
 
 ## ---------------------------------------------------------------------------
-##' Unpack and read raw exchange zipfile.
+##' Unpack and read raw exchange zipfile(s).
 ##'
 ##' The raw exchange files from ICES are zipfiles (without zip extension).
 ##' This function unzips the file to a temporary directory and then reads
 ##' and converts the resulting text file.
+##' If multiple filenames are supplied, all files are read and combined to
+##' a single object.
 ##' @title Read exchange data into R.
-##' @param zipfile File to read.
+##' @param zipfile File(s) to read.
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object.
 readExchange <- function(zipfile,strict=TRUE){
+  if(length(zipfile)>1)return(do.call("c",lapply(zipfile,readExchange,strict=strict)))
   tempdir <- tempdir()
   csvfile <- unzip(zipfile,exdir=tempdir)[1]
   cat("Processing csv file:\n")
