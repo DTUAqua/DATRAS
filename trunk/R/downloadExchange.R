@@ -2,8 +2,8 @@
 ##'
 ##' Note: Command line php must be installed.
 ##' @title Interface to DATRAS php download script
-##' @param survey 
-##' @param years 
+##' @param survey Name of survey to download (For a list of available names run \code{downloadExchange()})
+##' @param years Vector of years to download. If unspecified, all years are downloaded one by one.
 ##' @return NULL
 downloadExchange <- function(survey,years=NULL){
     phpscript <- system.file("datras.php",package="DATRAS")
