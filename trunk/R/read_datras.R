@@ -494,6 +494,10 @@ addSpectrum <- function(x,cm.breaks=seq(min(x[[3]]$LngtCm,na.rm=TRUE),max(x[[3]]
   {
     stopifnot(class(x)=="DATRASraw");
     if(length(levels(x[[3]]$Species))>1) warning("Multiple species found - spectrum will contain all species");
+    if(any( is.na(x[[2]]$DataType))){
+      warning(sum(is.na(x[[2]]$DataType))," NA's found in DataType. These hauls will be removed")
+      x <- subset(x,!is.na(DataType))
+    }
     if(any( x[[2]]$DataType=="S")) warning("DataType 'S' found in length data. These hauls will be interpreted as DataType 'R' wrt. total numbers caught.")
     x[[3]]$sizeGroup <- cut(x[[3]]$LngtCm,breaks=cm.breaks,right=FALSE)
     N <- xtabs(Count ~ haul.id + sizeGroup , data=x[[3]])
