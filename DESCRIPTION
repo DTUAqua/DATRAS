@@ -25,3 +25,4 @@ Collate:
     'DATRAS.R'
     'plotVBG.R'
     'downloadExchange.R'
+    'AgeFunctions.R'
