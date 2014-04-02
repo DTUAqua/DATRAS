@@ -57,6 +57,7 @@ rawALK <- function(d,minAge,maxAge){
 ##' @param alk.type method to calculate age-length key
 ##' @return A vector with weight-at-age
 weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
+  checkSpectrum(d);
   alk.type <- match.arg(alk.type)
   pl = colSums(d$N)/sum(d$N)
   if(alk.type=="raw"){
@@ -107,6 +108,7 @@ bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="
 ##' @param d DATRASraw object
 ##' @return DATRASraw object
 addWeightByHaul <-function(d){
+  checkSpectrum(d);
   m=lm( log(IndWgt) ~ log(LngtCm),data=d[[1]])
   cm.breaks = attr(d,"cm.breaks")[-1]-0.5
   tmp=d[[1]][ 1:length(cm.breaks) ,]
