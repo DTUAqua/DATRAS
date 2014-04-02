@@ -1,0 +1,25 @@
+\name{fitvbg}
+\alias{fitvbg}
+\title{Fit von Bertalanffy growth model to age-length data.}
+\usage{
+  fitvbg(d, L0 = 0, plot = FALSE)
+}
+\arguments{
+  \item{d}{DATRASraw object}
+
+  \item{L0}{Length at time t0}
+
+  \item{plot}{Plot the fitted vbg curve?}
+}
+\value{
+  list with parameters
+}
+\description{
+  Fit von Bertalanffy growth model to age-length data.
+}
+\details{
+  Note: Fitting is done using non linear least squares
+  which assumes constant variance of size samples given
+  age.
+}
+
