@@ -5,9 +5,11 @@
   downloadExchange(survey, years = NULL)
 }
 \arguments{
-  \item{survey}{}
+  \item{survey}{Name of survey to download (For a list of
+  available names run \code{downloadExchange()})}
 
-  \item{years}{}
+  \item{years}{Vector of years to download. If unspecified,
+  all years are downloaded one by one.}
 }
 \value{
   NULL
