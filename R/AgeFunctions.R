@@ -109,7 +109,7 @@ bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="
 ##' @return DATRASraw object
 addWeightByHaul <-function(d){
   checkSpectrum(d);
-  m=lm( log(IndWgt) ~ log(LngtCm),data=d[[1]])
+  m=lm( log(IndWgt) ~ log(LngtCm),data=subset(d[[1]],IndWgt>0))
   cm.breaks = attr(d,"cm.breaks")[-1]-0.5
   tmp=d[[1]][ 1:length(cm.breaks) ,]
   tmp$LngtCm = cm.breaks
