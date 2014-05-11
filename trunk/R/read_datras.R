@@ -6,16 +6,30 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
   cat("Locating lines with headers\n")
   print(system.time(lines <- readLines(file)))
   system.time(i <- grep("RecordType",lines))
+  headers <- lines[i]
   skip <- i-1
   nrow <- c(diff(i),0)-1
   cat("Reading data files\n")
   d <- lapply(1:length(i),function(i){
+    ## "read.csv" does not handle the case nrow[i]=0 correctly - workaround:
+    emptyDF <- function(nm){
+      structure(rep(list(logical(0)),length(nm)),.Names=nm,class="data.frame")
+    }
+    if(nrow[i]==0){
+      return(emptyDF(strsplit(headers[i],",")[[1]]))
+    }
     print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings)))
     ans$StNo <- as.character(ans$StNo)
     ans
   })
+  ## Name fields with record type (account for possibly empty CA or HL data.frames)
+  names(d) <- sapply(d,function(x){
+    if(nrow(x)>0)as.character(x$RecordType[1])
+    else if ("NoAtALK" %in% names(x)) "CA"
+    else if ("HLNoAtLngt" %in% names(x)) "HL"
+    else stop("Could not determine record types.")
+  })
   ## Data components must come in specific order
-  names(d) <- sapply(d,function(x)as.character(x$RecordType[1]))
   d <- d[c("CA", "HH", "HL")]
   cat("Classes of the variables\n")
   print(lapply(d,function(x)sapply(x,class)))
