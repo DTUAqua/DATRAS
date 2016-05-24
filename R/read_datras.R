@@ -20,6 +20,8 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     }
     print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings)))
     ans$StNo <- as.character(ans$StNo)
+    ## Use upper case for initial letter
+    substring(names(ans),1,1) <- toupper(substring(names(ans),1,1))
     ans
   })
   ## Name fields with record type (account for possibly empty CA or HL data.frames)
@@ -374,8 +376,8 @@ addExtraVariables <- function(IBTS){
   multiplier <- ifelse(d3$DataType=="C",d3$HaulDur/60,d3$SubFactor)
   d3$Count <- d3$HLNoAtLngt*multiplier
   
-  d2$abstime <- local(Year+(month-1)*1/12+(Day-1)/365,d2)
-  d2$timeOfYear <- local((month-1)*1/12+(Day-1)/365,d2)
+  d2$abstime <- local(Year+(Month-1)*1/12+(Day-1)/365,d2)
+  d2$timeOfYear <- local((Month-1)*1/12+(Day-1)/365,d2)
   d2$TimeShotHour=as.integer(d2$TimeShot/100) + (d2$TimeShot%%100)/60;
   d2 <- transform(d2,lon=ShootLong,lat=ShootLat)
 
