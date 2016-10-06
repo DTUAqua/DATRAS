@@ -22,6 +22,13 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     ans$StNo <- as.character(ans$StNo)
     ## Use upper case for initial letter
     substring(names(ans),1,1) <- toupper(substring(names(ans),1,1))
+    ## HL record:
+    tab <- c("ValidAphiaID" = "Valid_Aphia",
+             "LngtClass" = "LngtClas",
+             "AgeRings" = "Age",
+             "CANoAtLngt" = "NoAtALK")
+    nam <- names(ans)
+    names(ans) <- ifelse(is.na(tab[nam]), nam, tab[nam])
     ans
   })
   ## Name fields with record type (account for possibly empty CA or HL data.frames)
