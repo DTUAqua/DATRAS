@@ -1,0 +1,614 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Tutorial</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2014-04-02 20:02:24 CEST"/>
+<meta name="author" content="Casper W. Berg"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+
+<h1 class="title">Tutorial</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Introduction </a></li>
+<li><a href="#sec-2">2 Getting started </a>
+<ul>
+<li><a href="#sec-2.1">2.1 Install the DATRAS package </a></li>
+<li><a href="#sec-2.2">2.2 Download data from ICES </a></li>
+<li><a href="#sec-2.3">2.3 Read data into R </a></li>
+<li><a href="#sec-2.4">2.4 What is in the <code>DATRASraw</code> object? </a></li>
+<li><a href="#sec-2.5">2.5 Simple data subsetting </a></li>
+<li><a href="#sec-2.6">2.6 What can be added to the object ? </a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 Visualizing data </a>
+<ul>
+<li><a href="#sec-3.1">3.1 Spatial plot </a></li>
+<li><a href="#sec-3.2">3.2 Cohort plot </a></li>
+<li><a href="#sec-3.3">3.3 Biomass plot </a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 Age-Length keys </a>
+<ul>
+<li><a href="#sec-4.1">4.1 Simple continuation-ratio logits </a></li>
+<li><a href="#sec-4.2">4.2 Spatial age-length keys </a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction </h2>
+<div class="outline-text-2" id="text-1">
+
+<p>Handling and interpreting data from DATRAS correctly from scratch takes
+a significant amount of effort and time, but this R package can reduce
+much of this workload to a few lines of code. The raw exchange format
+can be read into a <code>DATRASraw</code> object in <code>R</code> using the package. These
+data objects contain three components
+</p>
+<ol>
+<li>
+Age data (CA records) - one vector per individual fish
+
+</li>
+<li>
+Hydro data (HH records) - one vector per haul, position and experimental
+conditions.
+
+</li>
+<li>
+Length data (HL records) - numbers per length group by haul and species
+
+</li>
+</ol>
+
+<p>One particular useful function in the DATRAS package is the <code>subset()</code>
+function. It allows subsetting over all three components at once,
+without the need for specifying for which component(s) the subset
+clauses apply, because the function will look for the variable names in
+all components and apply the clauses where appropriate.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Getting started </h2>
+<div class="outline-text-2" id="text-2">
+
+
+</div>
+
+<div id="outline-container-2.1" class="outline-3">
+<h3 id="sec-2.1"><span class="section-number-3">2.1</span> Install the DATRAS package </h3>
+<div class="outline-text-3" id="text-2.1">
+
+<p>To install the DATRAS package, start R and type
+</p>
+
+
+<pre class="example">install.packages('DATRAS',repos='http://www.rforge.net/',type='source')
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2.2" class="outline-3">
+<h3 id="sec-2.2"><span class="section-number-3">2.2</span> Download data from ICES </h3>
+<div class="outline-text-3" id="text-2.2">
+
+<p>Data can be downloaded from the web page
+<a href="http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx">http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx</a>
+. Make sure the <i>Data products</i> check box is set to <i>Exchange Data</i>. Also
+make sure that the check boxes <i>HH</i>, <i>HL</i> and <i>CA</i> are marked. In this
+example we will consider the survey <i>NS-IBTS</i>, with all quarters from
+2006-2012 and all ships represented. Submit the query, and a file
+called <i>Exchange</i> will be downloaded. The data file used in this tutorial
+is also available here <a href="http://www.rforge.net/DATRAS/Exchange">http://www.rforge.net/DATRAS/Exchange</a> .
+</p>
+<p>
+Advanced users can take advantage of a php script shipping with the
+DATRAS package. It requires command line php installed.
+For instance, to download data for the <i>NS-IBTS</i> survey for the period
+1995-2005 run
+</p>
+
+
+<pre class="example">downloadExchange("NS-IBTS",1995:2005)
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2.3" class="outline-3">
+<h3 id="sec-2.3"><span class="section-number-3">2.3</span> Read data into R </h3>
+<div class="outline-text-3" id="text-2.3">
+
+<p>Data is read into R using the function <i>readExchange</i>
+</p>
+
+
+<pre class="example">library(DATRAS)
+d &lt;- readExchange("Exchange")
+</pre>
+
+
+
+<p>
+To see what is in the data object do
+</p>
+
+
+<pre class="example">print(d)
+</pre>
+
+
+
+
+<pre class="example">
+Object of class 'DATRASraw'
+===========================
+Number of hauls: 5054 
+Number of species: 211 
+Number of countries: 8 
+Years: 2006 2007 2008 2009 2010 2011 2012 
+Quarters: 1 2 3 
+Gears: GOV 
+Haul duration: 0 - 58 minutes
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2.4" class="outline-3">
+<h3 id="sec-2.4"><span class="section-number-3">2.4</span> What is in the <code>DATRASraw</code> object? </h3>
+<div class="outline-text-3" id="text-2.4">
+
+<p>The individual components of a <code>DATRASraw</code> object are accessed using
+the double square bracket operator:
+</p>
+
+
+
+<pre class="example">names(d[["CA"]])
+</pre>
+
+
+
+
+
+<pre class="example"> [1] "RecordType"        "Survey"            "Quarter"          
+ [4] "Country"           "Ship"              "Gear"             
+ [7] "SweepLngt"         "GearExp"           "DoorType"         
+[10] "StNo"              "HaulNo"            "Year"             
+[13] "SpecCodeType"      "SpecCode"          "AreaType"         
+[16] "AreaCode"          "LngtCode"          "LngtClas"         
+[19] "Sex"               "Maturity"          "PlusGr"           
+[22] "Age"               "NoAtALK"           "IndWgt"           
+[25] "DateofCalculation" "StatRec"           "LngtCm"           
+[28] "Species"           "haul.id"
+</pre>
+
+
+
+
+<p>
+Beyond the default variables, the extra variables <i>LngtCm</i>, <i>Species</i>
+and <i>haul.id</i> have been added automatically.
+</p>
+<p>
+Likewise , the hydro and length data records are accessed by
+</p>
+
+
+
+<pre class="example">names(d[["HH"]])
+names(d[["HL"]])
+</pre>
+
+
+
+
+<p>
+For instance, to list the 10 most common occuring length groups by
+species run 
+</p>
+
+
+<pre class="example">summary(d[["HL"]]$Species)[1:10]
+</pre>
+
+
+
+
+
+<pre class="example">        Merlangius merlangus              Limanda limanda 
+                       63383                        61977 
+             Clupea harengus     Melanogrammus aeglefinus 
+                       48354                        46988 
+       Pleuronectes platessa           Eutrigla gurnardus 
+                       41690                        40594 
+Hippoglossoides platessoides                 Gadus morhua 
+                       31214                        24598 
+           Sprattus sprattus             Microstomus kitt 
+                       20650                        19603
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2.5" class="outline-3">
+<h3 id="sec-2.5"><span class="section-number-3">2.5</span> Simple data subsetting </h3>
+<div class="outline-text-3" id="text-2.5">
+
+
+
+
+<pre class="example">dd &lt;- subset(d,Species=="Gadus morhua",25&lt;HaulDur &amp; HaulDur&lt;35, 5&lt;lon &amp; lon&lt;10 &amp; 56&lt;lat &amp; lat&lt;60 )
+</pre>
+
+
+
+
+
+<p>
+The reduced data set contains
+</p>
+
+
+<pre class="example">print(dd)
+</pre>
+
+
+
+
+<pre class="example">
+Object of class 'DATRASraw'
+===========================
+Number of hauls: 424 
+Number of species: 1 
+Number of countries: 7 
+Years: 2006 2007 2008 2009 2010 2011 2012 
+Quarters: 1 3 
+Gears: GOV 
+Haul duration: 27 - 32 minutes
+</pre>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2.6" class="outline-3">
+<h3 id="sec-2.6"><span class="section-number-3">2.6</span> What can be added to the object ? </h3>
+<div class="outline-text-3" id="text-2.6">
+
+<p>For convenience, various types of derived quantities and meta-data can
+be added to the <code>DATRASraw</code> object.
+Most importantly, the raw number of observed individuals per length
+group per haul is added as follows
+</p>
+<p>
+Size spectra on haul level are conveniently analysed using the
+<code>addSpectrum()</code> function, which adds the numbers caught per
+length group (cm) in the variable <code>N</code> on component 2.
+For example, to add the spectrum on data from Quarter 1 and list
+column 10 to 15 in the spectrum for the six first hauls: 
+</p>
+
+
+
+<pre class="example">dQ1 &lt;- subset(dd,Quarter==1)
+dQ1 &lt;- addSpectrum(dQ1,by=1)
+head(dQ1$N[,10:15])
+</pre>
+
+
+
+
+<pre class="example">
+                           sizeGroup
+haul.id                     [16,17) [17,18) [18,19) [19,20) [20,21) [21,22)
+  2006:1:DEN:DAN2:GOV:26:6        0       0       0       0       0       0
+  2006:1:DEN:DAN2:GOV:28:7        1       0       0       0       0       0
+  2006:1:DEN:DAN2:GOV:44:10       0       0       0       0       0       1
+  2006:1:DEN:DAN2:GOV:42:9        0       0       0       0       0       0
+  2006:1:DEN:DAN2:GOV:40:8        1       1       0       0       0       0
+  2006:1:DEN:DAN2:GOV:24:5        0       0       0       0       0       0
+</pre>
+
+
+<p>
+Further, numbers at age can be added by
+</p>
+
+
+<pre class="example">dQ1 &lt;- addNage(dQ1)
+</pre>
+
+
+
+<p>
+see later details.
+</p>
+<p>
+Spatial data from a shapefile can be added to the hydro data as follows
+</p>
+
+
+<pre class="example">dQ1 &lt;- addSpatialData(dQ1,"ICES_areas.shp")
+</pre>
+
+
+
+<p>
+Shapefiles with ICES areas can be found at <a href="http://geo.ices.dk">http://geo.ices.dk</a>.
+This allows standard ICES areas to be extracted from a <code>DATRASraw</code>
+object:
+</p>
+
+
+<pre class="example">dQ1 &lt;- subset(dQ1,ICES_area=="IIIa")
+</pre>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Visualizing data </h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+<div id="outline-container-3.1" class="outline-3">
+<h3 id="sec-3.1"><span class="section-number-3">3.1</span> Spatial plot </h3>
+<div class="outline-text-3" id="text-3.1">
+
+<p>The default plot method of the <i>DATRASraw</i> object provides an overview
+of the trawl locations
+</p>
+
+
+<pre class="example">plot(dd)
+</pre>
+
+
+
+
+<p>
+<img src="plot.png"  alt="plot.png" />
+</p>
+<p>
+And if a length spectrum has been added, the length distribution
+is displayed for each ICES square:
+</p>
+
+
+<pre class="example">dd &lt;- addSpectrum(dd)
+plot(dd,col="red")
+</pre>
+
+
+
+
+<p>
+<img src="plot2.png"  alt="plot2.png" />
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-3.2" class="outline-3">
+<h3 id="sec-3.2"><span class="section-number-3">3.2</span> Cohort plot </h3>
+<div class="outline-text-3" id="text-3.2">
+
+<p>To see the temporal evolution of the length distribution of the stock
+the function <i>plotVBG</i> is useful 
+</p>
+
+
+<pre class="example">plotVBG(dd,scale=2,ylim=c(0,60),col=c(2,4),lwd=2,by=paste(Year,Quarter))
+</pre>
+
+
+
+
+<p>
+<img src="plotvbg.png"  alt="plotvbg.png" />
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3.3" class="outline-3">
+<h3 id="sec-3.3"><span class="section-number-3">3.3</span> Biomass plot </h3>
+<div class="outline-text-3" id="text-3.3">
+
+<p>To plot bubbles with areas proportional to the observed biomass in
+each haul, and red crosses for zero catch hauls, try
+</p>
+
+
+<pre class="example">dd &lt;- addWeightByHaul(dd)
+bubblePlot(dd)
+</pre>
+
+
+
+
+<p>
+<img src="bubble.png"  alt="bubble.png" />
+</p>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Age-Length keys </h2>
+<div class="outline-text-2" id="text-4">
+
+
+</div>
+
+<div id="outline-container-4.1" class="outline-3">
+<h3 id="sec-4.1"><span class="section-number-3">4.1</span> Simple continuation-ratio logits </h3>
+<div class="outline-text-3" id="text-4.1">
+
+<p>Fit age-length key and predict numbers-at-age
+</p>
+
+
+
+<pre class="example">library(mgcv)
+</pre>
+
+
+
+
+
+<pre class="example">alk &lt;- fitALK(dQ1,minAge=1,maxAge=4)
+dQ1$Nage = predict(alk)
+head(dQ1$Nage)
+</pre>
+
+
+
+
+<pre class="example">
+                1            2            3           4+
+[1,] 2.220446e-16 2.448222e-05 7.392315e-02 9.260524e-01
+[2,] 1.992781e+00 7.218763e-03 2.278510e-07 4.058172e-11
+[3,] 1.902358e+00 2.072981e+00 2.455574e-02 1.049175e-04
+[4,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+[5,] 4.978305e+00 2.170079e-02 3.925881e-02 2.960736e+00
+[6,] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+</pre>
+
+
+<p>
+Plot age length key (smooth and raw proportions by length group)
+</p>
+
+
+<pre class="example">plotALKfit(alk,row=1)
+plotALKraw(dQ1,minAge=1,maxAge=4,add=TRUE)
+</pre>
+
+
+
+
+<p>
+<img src="alk.png"  alt="alk.png" />
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-4.2" class="outline-3">
+<h3 id="sec-4.2"><span class="section-number-3">4.2</span> Spatial age-length keys </h3>
+<div class="outline-text-3" id="text-4.2">
+
+</div>
+</div>
+</div>
+<div id="postamble">
+<p class="author"> Author: Casper W. Berg
+<a href="mailto:casper@casper-laptop">&lt;casper@casper-laptop&gt;</a>
+</p>
+<p class="date"> Date: 2014-04-02 20:02:24 CEST</p>
+<p class="creator">HTML generated by org-mode 6.33x in emacs 23</p>
+</div>
+</div>
+</body>
+</html>
