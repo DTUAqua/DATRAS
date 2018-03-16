@@ -1,0 +1,3 @@
+#!/bin/sh
+make build-package
+mv ./*.tar.gz ..
