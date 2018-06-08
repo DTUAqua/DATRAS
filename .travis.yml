@@ -1,0 +1,23 @@
+language: r
+
+sudo: false
+
+cache: packages
+
+os:
+  - linux
+
+jobs:
+  include:
+
+    - stage: Run tests
+      r: devel
+      install: true
+      script:
+        - R CMD INSTALL DATRAS
+        - cd tests; R --slave < test.R
+
+notifications:
+  email:
+    on_success: never
+    on_failure: never
