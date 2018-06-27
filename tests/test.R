@@ -44,5 +44,13 @@ checksum( capture.output(print(spl)) )
 
 ## Check:
 md5sums.new <- readLines("md5sums")
+if (!identical(md5sums.new, md5sums.old)) {
+    cat("New >>>>\n")
+    cat(paste(md5sums.new, "\n"))
+    cat("Old >>>>\n")
+    cat(paste(md5sums.old, "\n"))
+    cat("Diff >>>>\n")
+    system("git diff md5sums")
+}
 stopifnot(identical(md5sums.new, md5sums.old))
 message("TESTS PASSED :)")
