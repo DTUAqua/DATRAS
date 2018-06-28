@@ -4,7 +4,7 @@ names(d)   31936a5636201bcb8efed23008192f87
 colnames(d[["CA"]])   05a0894bba3b10b180865fc48cd2fbec 
 colnames(d[["HH"]])   7c490fe4d5f90ddfb4c2add2eda95ea8 
 colnames(d[["HL"]])   2a186164b4c1017afebde2aaa6ab7c65 
-levels(d$haul.id)   33a75c8684b7bad898b9631b2caddb78 
+levels(d$haul.id)   f81e1fd759aace4ac5b7cc66275109ac 
 capture.output(print(ds))   ce283cdf81ab1a7e473a0c2a573d6e6d 
 ds$N   4c0eeca5651162aaff25991572d5474c 
 ds$Nage   cb6d401e04bc415f7d2b459cf9c439bd 
