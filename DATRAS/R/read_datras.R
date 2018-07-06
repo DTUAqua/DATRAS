@@ -1,4 +1,48 @@
 ## ---------------------------------------------------------------------------
+##' Download raw exchange data from DATRAS web services.
+##'
+##' This function downloads raw exchange data and converts it to a DATRASraw object.
+##' If multiple surveys are supplied, all files are read and combined to
+##' a single object.
+##' @title Read exchange data into R.
+##' @param survey Name of survey to download (For a list of available names run \code{icesDatras::getSurveyList()})
+##' @param quarters Vector of quarters to download.
+##' @param years Vector of years to download.
+##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
+##' @return DATRASraw object.
+#' @importFrom icesDatras getDATRAS
+getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
+  # download data
+  ca <- getDATRAS("CA", survey = survey, years = years, quarters = quarters)
+  if (identical(ca, FALSE)) {
+    stop()
+  }
+
+  hh <- getDATRAS("HH", survey = survey, years = years, quarters = quarters)
+  hl <- getDATRAS("HL", survey = survey, years = years, quarters = quarters)
+
+  # form data into a list- must come in specific order
+  d <- list(CA = ca, HH = hh, HL = hl)
+  cat("Classes of the variables\n")
+  print(lapply(d, sapply, class))
+
+  ## Inconsistencies with variable names are resolved here
+  ## =====================================================
+  ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
+  if (is.null(d$CA$StatRec)) d$CA$StatRec <- d$CA$AreaCode
+  d <- addExtraVariables(d)
+  d <- fixMissingHaulIds(d, strict = strict)
+
+  # set class and return
+  class(d) <- "DATRASraw"
+  d
+}
+
+
+
+
+
+## ---------------------------------------------------------------------------
 ## Read ICES data and convert to .RData
 ## Remember that ICES use "-9" to code missing values !
 ## ---------------------------------------------------------------------------
@@ -74,7 +118,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
 ##' @param na.rm Discard missing values in subset criterion?
 ##' @return The reduced dataset.
 ##' @method subset DATRASraw
-##' @S3method subset DATRASraw
+##' @export subset DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -171,7 +215,7 @@ print.DATRASraw <- function(x,...){
 ##' @return DATRASraw object
 ##' @rdname indexSubset
 ##' @method [ DATRASraw
-##' @S3method [ DATRASraw
+##' @export [ DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -268,7 +312,7 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' @param ... DATRASraw objects to put together.
 ##' @return Merged dataset.
 ##' @method c DATRASraw
-##' @S3method c DATRASraw
+##' @export c DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -563,7 +607,7 @@ getAccuracyCM <- function(x){
 ##' @return data.frame with one line for each response along with associated
 ##' covariates.
 ##' @method as.data.frame DATRASraw
-##' @S3method as.data.frame DATRASraw
+##' @export as.data.frame DATRASraw
 ## ---------------------------------------------------------------------------
 as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
                                     cleanup=TRUE){
@@ -624,7 +668,7 @@ as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
 ##' @param ylim Latitude range of plot.
 ##' @param ... Controlling plot of positions.
 ##' @method plot DATRASraw
-##' @S3method plot DATRASraw
+##' @export plot DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -714,7 +758,7 @@ tilePlot <- function(expr,xlim,ylim,pol){
 ##' @title Positions can be added to existing plot.
 ##' @rdname plot.DATRASraw
 ##' @method points DATRASraw
-##' @S3method points DATRASraw
+##' @export points DATRASraw
 points.DATRASraw <- function(x,...){
   plot(x,add=TRUE,...)
 }
