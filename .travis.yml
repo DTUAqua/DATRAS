@@ -24,4 +24,7 @@ notifications:
 
 r_packages:
   - icesDatras
+
+repos:
+  CRAN: https://cloud.r-project.org
   
