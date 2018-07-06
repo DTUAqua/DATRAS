@@ -12,6 +12,8 @@ jobs:
 
     - stage: Run tests
       r: devel
+      r_packages:
+        - icesDatras
       install: true
       script:
         - R CMD INSTALL DATRAS
@@ -22,9 +24,5 @@ notifications:
     on_success: never
     on_failure: never
 
-r_packages:
-  - icesDatras
 
-repos:
-  CRAN: https://cloud.r-project.org
-  
+
