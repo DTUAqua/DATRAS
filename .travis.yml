@@ -12,10 +12,9 @@ jobs:
 
     - stage: Run tests
       r: devel
-      r_packages:
-        - icesDatras
       install: true
       script:
+        - echo "install.packages(\"icesDatras\")" | R --slave
         - R CMD INSTALL DATRAS
         - cd tests; R --slave < test.R
 
