@@ -15,7 +15,9 @@ Suggests:
     maps,
     mgcv,
     multicore,
-    maptools
+    maptools,
+Imports:
+    icesDatras
 License: GPL
 LazyLoad: yes
 Collate:
