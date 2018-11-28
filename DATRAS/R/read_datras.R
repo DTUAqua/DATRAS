@@ -33,7 +33,14 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
   d <- addExtraVariables(d)
   d <- fixMissingHaulIds(d, strict = strict)
 
-  # set class and return
+  ## convert all strings to factors
+  for(i in 1:3){
+      for(k in 1:ncol(d[[i]])){
+          if(is.character( d[[i]][,k] ) )
+              d[[i]][,k] <- factor(d[[i]][,k])
+      }
+  }
+  ## set class and return
   class(d) <- "DATRASraw"
   d
 }
