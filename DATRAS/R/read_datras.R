@@ -718,8 +718,8 @@ plot.DATRASraw <- function(x,add=FALSE,pch=16,
   }
   if(plot.points)points(x$lon,x$lat,pch=pch,...)
   if(plot.map){
-    ok <- require(maps) && require(mapdata)
-    if(ok)map("worldHires",add=TRUE,lwd=1,col="darkgrey",fill=FALSE)
+    ok <- requireNamespace("maps", quietly = TRUE) && requireNamespace("mapdata", quietly = TRUE)
+    if(ok) maps::map("mapdata::worldHires",add=TRUE,lwd=1,col="darkgrey",fill=FALSE)
   }
   if(plot.response){
     response <- which(sapply(x[[2]],is.matrix))[1]
