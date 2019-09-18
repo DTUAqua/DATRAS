@@ -27,6 +27,7 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
   print(lapply(d, sapply, class))
 
   ## Inconsistencies with variable names are resolved here
+   for(i in 1:3) d[[i]] <- renameDATRAS(d[[i]])
   ## =====================================================
   ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
   if (is.null(d$CA$StatRec)) d$CA$StatRec <- d$CA$AreaCode
@@ -71,15 +72,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     }
     print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings)))
     ans$StNo <- as.character(ans$StNo)
-    ## Use upper case for initial letter
-    substring(names(ans),1,1) <- toupper(substring(names(ans),1,1))
-    ## HL record:
-    tab <- c("ValidAphiaID" = "Valid_Aphia",
-             "LngtClass" = "LngtClas",
-             "AgeRings" = "Age",
-             "CANoAtLngt" = "NoAtALK")
-    nam <- names(ans)
-    names(ans) <- ifelse(is.na(tab[nam]), nam, tab[nam])
+    ans <- renameDATRAS(ans)  
     ans
   })
   ## Name fields with record type (account for possibly empty CA or HL data.frames)
@@ -89,6 +82,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     else if ("HLNoAtLngt" %in% names(x)) "HL"
     else stop("Could not determine record types.")
   })
+  
   ## Data components must come in specific order
   d <- d[c("CA", "HH", "HL")]
   cat("Classes of the variables\n")
@@ -102,6 +96,24 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
   d <- fixMissingHaulIds(d,strict=strict)
   class(d) <- "DATRASraw"
   d
+}
+## ----------------------------------------------------------------------------
+##'
+##' Rename some columns to the old names
+##' @title Rename DATRAS columns
+##' @param x part of a DATRASraw object (CA, HH or HL)
+##' @return part of a DATRASraw object (CA, HH or HL) with renamed columns
+renameDATRAS <- function(x){
+    ## Use upper case for initial letter
+    substring(names(x),1,1) <- toupper(substring(names(x),1,1))
+    ## Old column names
+    tab <- c("ValidAphiaID" = "Valid_Aphia",
+             "LngtClass" = "LngtClas",
+             "AgeRings" = "Age",
+             "CANoAtLngt" = "NoAtALK")
+    nam <- names(x)
+    names(x) <- ifelse(is.na(tab[nam]), nam, tab[nam])
+    x
 }
 
 ## ---------------------------------------------------------------------------
@@ -349,7 +361,11 @@ c.DATRASraw <- function(...){
         warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
                 paste(missingVariables,collapse=", "),
                 ". NA will be inserted.")
-        ans[missingVariables] <- NA
+        if(nrow(ans)>0){
+            ans[missingVariables] <- NA
+        } else {
+            for(ii in 1:length(missingVariables)) ans[,missingVariables[ii]] <- logical(0)
+        }
       }
       ans
     })
