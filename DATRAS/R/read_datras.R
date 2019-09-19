@@ -70,7 +70,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     if(nrow[i]==0){
       return(emptyDF(strsplit(headers[i],",")[[1]]))
     }
-    print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings)))
+    print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings,colClasses=c("SpecCodeType"="character") )))
     ans$StNo <- as.character(ans$StNo)
     ans <- renameDATRAS(ans)  
     ans
