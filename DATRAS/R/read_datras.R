@@ -27,7 +27,8 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
   print(lapply(d, sapply, class))
 
   ## Inconsistencies with variable names are resolved here
-   for(i in 1:3) d[[i]] <- renameDATRAS(d[[i]])
+  for(i in 1:3) d[[i]] <- renameDATRAS(d[[i]])
+  d <- minus9toNA(d)
   ## =====================================================
   ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
   if (is.null(d$CA$StatRec)) d$CA$StatRec <- d$CA$AreaCode
@@ -48,6 +49,21 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
 
 
 
+##' Replace -9 with NA in numeric columns
+##' @title Replace -9 with NA in numeric columns
+##' @param x DATRASraw object
+##' @return DATRASraw object
+minus9toNA<-function(x){
+    for(i in 1:3){
+        for(ii in 1:ncol(x[[i]])){
+            if(is.numeric(x[[i]][,ii]) ){
+                is9 <- which( abs(x[[i]][,ii]+9)<1e-14 )
+                if(length(is9)>0) x[[i]][,ii][is9] <- NA
+            }
+        }
+    }
+    x
+}
 
 
 ## ---------------------------------------------------------------------------
