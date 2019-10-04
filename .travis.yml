@@ -11,7 +11,7 @@ jobs:
   include:
 
     - stage: Run tests
-      r: devel
+      r: release
       install: true
       script:
         - echo "install.packages(\"icesDatras\")" | R --slave
