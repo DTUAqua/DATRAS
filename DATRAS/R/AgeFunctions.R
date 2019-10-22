@@ -87,6 +87,7 @@ weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
 ##' @param scale scale size of bubbles
 ##' @param col.zero color for zero hauls
 ##' @param pch.zero pch for zero hauls
+##' @param rim Add blue rim to bubbles? (defaults to FALSE)
 ##' @param ... extra arguments to plot
 ##' @return nothing
 bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="+",rim=FALSE,...){
