@@ -89,12 +89,13 @@ weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
 ##' @param pch.zero pch for zero hauls
 ##' @param ... extra arguments to plot
 ##' @return nothing
-bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="+",...){
+bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="+",rim=FALSE,...){
   d[[2]]$resp.var <- d[[2]][[response]]
-  if(is.null(scale)) scale = mean(d[[2]]$resp.var,na.rm=TRUE)/max(d[[2]]$resp.var,na.rm=TRUE)  
+  if(is.null(scale)) scale = 4/max(sqrt(d[[2]]$resp.var),na.rm=TRUE)
   plot(d$lon,d$lat,type="n",xlab="Longitude",ylab="Latitude")
   map('worldHires',fill=TRUE,plot=TRUE,add=TRUE,col=grey(0.5))
   points(d$lon,d$lat,pch=16,cex=scale*sqrt(d[[2]]$resp.var),...)
+  if(rim) points(d$lon,d$lat,cex=scale*sqrt(d[[2]]$resp.var),pch=1,lwd=0.3,col="blue")
   zero=subset(d,resp.var==0)
   points(zero$lon,zero$lat,pch=pch.zero,col=col.zero)
 }
@@ -106,8 +107,9 @@ bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="
 ##' Thus, this only makes sense for one species.
 ##' @title Calculate total biomass by haul and add to HH-records 
 ##' @param d DATRASraw object
+##' @param to1min divide by haul duration in minutes? (defaults to TRUE)
 ##' @return DATRASraw object
-addWeightByHaul <-function(d){
+addWeightByHaul <-function(d, to1min=TRUE){
   checkSpectrum(d);
   m=lm( log(IndWgt) ~ log(LngtCm),data=subset(d[[1]],IndWgt>0))
   cm.breaks = attr(d,"cm.breaks")[-1]-0.5
@@ -119,7 +121,7 @@ addWeightByHaul <-function(d){
     d[[2]]$N[i,] %*% LW
   }
   d[[2]]$HaulWgt=unlist(lapply(1:nrow(d[[2]]),WgtByHaul))
-  d[[2]]$HaulWgt = d[[2]]$HaulWgt/d[[2]]$HaulDur;
+  if(to1min) d[[2]]$HaulWgt = d[[2]]$HaulWgt/d[[2]]$HaulDur
   d
 }
 
