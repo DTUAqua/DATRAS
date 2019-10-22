@@ -37,7 +37,7 @@ if(count($argv)<2){
   curl_close($ch);
 
   preg_match_all('~<option.*value=".*">(.*?)</option>~', $html, $surveys);
-  for($i=11;$i<count($surveys[1]); $i++)
+  for($i=14;$i<count($surveys[1]); $i++)
     print($surveys[1][$i] . "\n");
   die();
 }
@@ -87,7 +87,7 @@ $eventValidation = $eventValidation[1];
 
 // <option value="2341">NS-IBTS</option>
 $survey=$argv[1];
-preg_match('~<option.*value="(.*?)">[ ]*' . $survey . '[ ]*</option>~', $html, $surveyid);
+preg_match('~<option.*value="(.*?)">' . $survey . '.*</option>~', $html, $surveyid);
 //print_r($surveyid);
 if(count($surveyid)!=2)die("Non-unique survey");
 $surveyid=$surveyid[1];
