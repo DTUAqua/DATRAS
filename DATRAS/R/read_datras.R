@@ -131,7 +131,8 @@ renameDATRAS <- function(x){
     tab <- c("ValidAphiaID" = "Valid_Aphia",
              "LngtClass" = "LngtClas",
              "AgeRings" = "Age",
-             "CANoAtLngt" = "NoAtALK")
+             "CANoAtLngt" = "NoAtALK",
+             "NoAtLngt" = "NoAtALK")
     nam <- names(x)
     names(x) <- ifelse(is.na(tab[nam]), nam, tab[nam])
     x
