@@ -7,8 +7,8 @@ all:
 	make pdf
 
 doc-update:
-	echo "library(roxygen2);roxygenize(\"$(PACKAGE)\",roclets = c(\"collate\", \"rd\"))" | R --slave
-	#echo "library(roxygen2);roxygenize(\"$(PACKAGE)\")" | R --slave
+	#echo "library(roxygen2);roxygenize(\"$(PACKAGE)\",roclets = c(\"collate\", \"rd\"))" | R --slave
+	echo "library(roxygen2);roxygenize(\"$(PACKAGE)\",clean=TRUE)" | R --slave
 	#rm $(PACKAGE)/NAMESPACE
 
 build-package:
