@@ -19,6 +19,7 @@
 ##' @param ylab y-axis label
 ##' @param ... passed to par()
 ##' @return NULL
+##' @export
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -116,6 +117,7 @@ plotVBG <- function(d,
 ##' @param L0 Length at time t0
 ##' @param plot Plot the fitted vbg curve?
 ##' @return list with parameters
+##' @export
 fitvbg <- function(d,L0=0,plot=FALSE){
   ## Lookup time of year by haul.id
   timeOfYear <- d[["HH"]]$timeOfYear

@@ -5,6 +5,7 @@
 ##' @param survey Name of survey to download (For a list of available names run \code{downloadExchange()})
 ##' @param years Vector of years to download. If unspecified, all years are downloaded one by one.
 ##' @return NULL
+##' @export
 downloadExchange <- function(survey,years=NULL){
     phpscript <- system.file("datras.php",package="DATRAS")
     cmd <- paste("php",phpscript)

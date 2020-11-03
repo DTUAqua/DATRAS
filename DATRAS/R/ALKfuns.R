@@ -67,6 +67,7 @@ fitALKone<-function(a,ages,AL,model,gamma,autoChooseK=FALSE,useBIC=FALSE,varCof=
 ##' @param verbose Print details about the fitting process.
 ##' @param ... Optional extra arguments to gam()
 ##' @return An object of class 'ALKmodel'
+##' @export
 fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(LngtCm,2)", "cra~LngtCm+s(lon,lat,bs='ts')" )[method],
                         method=1,autoChooseK=FALSE,useBIC=FALSE,varCof=FALSE,maxK=100,gamma=1.4,verbose=FALSE,...){
   checkSpectrum(x);
@@ -104,8 +105,7 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
 ##' @param mc.cores use this number of cores (parallel computation via multicore library)
 ##' @param ... unused
 ##' @return A matrix if type equals "Nage", and a list of matrices if type equals "ALK".
-##' @method predict ALKmodel
-##' @S3method predict ALKmodel
+##' @export
 predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
   x <- object
   dat=attr(x,"data");
@@ -140,6 +140,7 @@ predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
 ##' @param x An object of class "ALKmodel"
 ##' @param returnALK Return ALK instead of numbers-at-age
 ##' @return Vector with numbers-at-age (or ALK)
+##' @export
 NageByHaul<-function(row,x,returnALK=FALSE){
   dat=attr(x,"data");
   ##checkSpectrum(dat);
@@ -197,6 +198,7 @@ NageByHaul<-function(row,x,returnALK=FALSE){
 ##' @param verbose Print details about the fitting process.
 ##' @param ... Optional extra arguments to gam()
 ##' @return A DATRASraw object.
+##' @export
 addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~poly(LngtCm,2)"), paste("cra~LngtCm+s(lon,lat,bs='ts')"))[method],
                         method=1,autoChooseK=FALSE,useBIC=FALSE,varCof=FALSE,maxK=100,gamma=1.4,verbose=FALSE,...){
   checkSpectrum(x);
@@ -217,8 +219,7 @@ addNage<-function(x,ages,mc.cores=1,model= c( paste("cra~LngtCm"), paste("cra~po
 ##' @param object2 An object of class 'ALKmodel'
 ##' @param ... unused
 ##' @return a p-value.
-##' @method anova ALKmodel
-##' @S3method anova ALKmodel
+##' @export
 anova.ALKmodel<-function(object,object2,...){
   m1 <- object
   m2 <- object2
@@ -245,8 +246,7 @@ anova.ALKmodel<-function(object,object2,...){
 ##' @param k Penalty for number of parameters
 ##' @param ... unused
 ##' @return AIC value.
-##' @method AIC ALKmodel
-##' @S3method AIC ALKmodel
+##' @export
 AIC.ALKmodel<-function(object,..., k=2){
   x <- object
   getEdf<-function(m) sum(m$edf)
@@ -266,6 +266,7 @@ AIC.ALKmodel<-function(object,..., k=2){
 ##' @param xlab argument to matplot()
 ##' @param ... extra parameters to matplot()
 ##' @return nothing
+##' @export
 plotALKraw<-function(x,minAge,maxAge,truncAt=0,type="l",ylab="Proportion",xlab="Cm",...){
   checkSpectrum(x);
   cm.breaks=attr(x,"cm.breaks");
@@ -288,6 +289,7 @@ plotALKraw<-function(x,minAge,maxAge,truncAt=0,type="l",ylab="Proportion",xlab="
 ##' @param xlab argument to matplot()
 ##' @param ... extra parameters for matplot()
 ##' @return nothing
+##' @export
 plotALKfit<-function(x,row,lwd=2,type="l",ylab="Proportion",xlab="Cm",...){
   dat=attr(x,"data");
   checkSpectrum(dat);
@@ -296,6 +298,7 @@ plotALKfit<-function(x,row,lwd=2,type="l",ylab="Proportion",xlab="Cm",...){
   matplot(cm.breaks[-length(cm.breaks)],ALK,lwd=lwd,type=type,ylab=ylab,xlab=xlab,...);
 }
 
+##' @export
 checkSpectrum<-function(x){
     if( is.null( attr( x, "cm.breaks")) ) stop("No spectrum found on DATRASraw object. Use function 'addSpectrum' for that");
 }

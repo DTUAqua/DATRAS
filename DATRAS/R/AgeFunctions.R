@@ -32,6 +32,7 @@ bayes <- function(pal,pl,fl){
 ##' @param minAge Minimum age
 ##' @param maxAge Maximum age (plus group)
 ##' @return matrix with ALK
+##' @export
 rawALK <- function(d,minAge,maxAge){
   checkSpectrum(d);
   if(any(xtabs(Age==minAge~Year,data=d[[1]])==0)) stop(paste("Some years have no observations of age",minAge));
@@ -56,6 +57,7 @@ rawALK <- function(d,minAge,maxAge){
 ##' @param maxAge maximum age group (plus group)
 ##' @param alk.type method to calculate age-length key
 ##' @return A vector with weight-at-age
+##' @export
 weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
   checkSpectrum(d);
   alk.type <- match.arg(alk.type)
@@ -90,6 +92,7 @@ weightAtAge<-function(d,minAge,maxAge,alk.type=c("raw","smooth")){
 ##' @param rim Add blue rim to bubbles? (defaults to FALSE)
 ##' @param ... extra arguments to plot
 ##' @return nothing
+##' @export
 bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="+",rim=FALSE,...){
   d[[2]]$resp.var <- d[[2]][[response]]
   if(is.null(scale)) scale = 4/max(sqrt(d[[2]]$resp.var),na.rm=TRUE)
@@ -110,6 +113,7 @@ bubblePlot <- function(d,response="HaulWgt",scale=NULL,col.zero="red",pch.zero="
 ##' @param d DATRASraw object
 ##' @param to1min divide by haul duration in minutes? (defaults to TRUE)
 ##' @return DATRASraw object
+##' @export
 addWeightByHaul <-function(d, to1min=TRUE){
   checkSpectrum(d);
   m=lm( log(IndWgt) ~ log(LngtCm),data=subset(d[[1]],IndWgt>0))

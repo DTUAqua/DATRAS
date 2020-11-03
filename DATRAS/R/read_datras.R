@@ -319,6 +319,7 @@ summary.DATRASraw <- function(object, ...){
 ##' @param zipfile File(s) to read.
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object.
+##' @export
 readExchange <- function(zipfile,strict=TRUE){
   if(length(zipfile)>1)return(do.call("c",lapply(zipfile,readExchange,strict=strict)))
   tempdir <- tempdir()

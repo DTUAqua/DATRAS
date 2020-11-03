@@ -15,6 +15,7 @@
 ##' @examples
 ##' icesSquare2coord(c("37G1","37G2"))
 ##' icesSquare2coord(c("37G1","37G2"),"polygons")
+##' @export
 ## ---------------------------------------------------------------------------
 icesSquare2coord <- function (x,format=c("corner","midpoint","polygons")) 
 {
@@ -46,6 +47,7 @@ icesSquare2coord <- function (x,format=c("corner","midpoint","polygons"))
 ##' @param lon Vector of longitudes.
 ##' @param lat Vector of latitudes.
 ##' @return Vector of ICES square names.
+##' @export
 ## ---------------------------------------------------------------------------
 icesSquare <- function (data, lon = data$lon, lat = data$lat) 
 {
