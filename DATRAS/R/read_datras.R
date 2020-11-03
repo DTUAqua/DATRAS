@@ -10,7 +10,8 @@
 ##' @param years Vector of years to download.
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object.
-#' @importFrom icesDatras getDATRAS
+##' @importFrom icesDatras getDATRAS
+##' @export
 getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
   # download data
   ca <- getDATRAS("CA", survey = survey, years = years, quarters = quarters)
@@ -53,6 +54,7 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE) {
 ##' @title Replace -9 with NA in numeric columns
 ##' @param x DATRASraw object
 ##' @return DATRASraw object
+##' @export
 minus9toNA<-function(x){
     for(i in 1:3){
         for(ii in 1:ncol(x[[i]])){
@@ -70,6 +72,7 @@ minus9toNA<-function(x){
 ## Read ICES data and convert to .RData
 ## Remember that ICES use "-9" to code missing values !
 ## ---------------------------------------------------------------------------
+##' @export
 readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000"),strict=TRUE){
   cat("Locating lines with headers\n")
   print(system.time(lines <- readLines(file)))
@@ -124,6 +127,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
 ##' @title Rename DATRAS columns
 ##' @param x part of a DATRASraw object (CA, HH or HL)
 ##' @return part of a DATRASraw object (CA, HH or HL) with renamed columns
+##' @export
 renameDATRAS <- function(x){
     ## Use upper case for initial letter
     substring(names(x),1,1) <- toupper(substring(names(x),1,1))
@@ -158,14 +162,13 @@ renameDATRAS <- function(x){
 ##' @param ... One or more subset criteria.
 ##' @param na.rm Discard missing values in subset criterion?
 ##' @return The reduced dataset.
-##' @method subset DATRASraw
-##' @export subset DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
 ##' }
 ##' x <- readExchange(file1)
 ##' y <- subset(x,Species=="Gadus morhua",LngtCm>30,HaulDur>25)
+##' @export
 ## ---------------------------------------------------------------------------
 subset.DATRASraw <- function(x,...,na.rm=TRUE){
   old.nrow <- sapply(x,nrow) ## To test what parts of x have been changed
@@ -221,7 +224,7 @@ subset.DATRASraw <- function(x,...,na.rm=TRUE){
   x
 }
 
-
+##' @export
 print.DATRASraw <- function(x,...){
   d1 <- x[[1]]
   d2 <- x[[2]]
@@ -241,7 +244,9 @@ print.DATRASraw <- function(x,...){
   cat("\n")
 }
 
+##' @export
 "$.DATRASraw" <- function(x,name)x[[2]][[name,exact=FALSE]]
+##' @export
 "$<-.DATRASraw" <- function(x,name,value){x[[2]][[name]] <- value;x}
 
 ##' Sample unit subset for DATRASraw object.
@@ -255,8 +260,6 @@ print.DATRASraw <- function(x,...){
 ##' @param i Integer vector
 ##' @return DATRASraw object
 ##' @rdname indexSubset
-##' @method [ DATRASraw
-##' @export [ DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -265,6 +268,7 @@ print.DATRASraw <- function(x,...){
 ##' x[1:2]
 ##' x[sample(3,replace=TRUE)]
 ##' split(x,x$Country)
+##' @export
 "[.DATRASraw" <- function(x,i){
   if(is.character(i))return(x[[2]][i])
   if(any(duplicated(i))){
@@ -290,8 +294,10 @@ print.DATRASraw <- function(x,...){
   call <- substitute(subset(x,haul.id %in% levels),list(levels=haul.levels))
   eval(call)
 }
+##' @export
 length.DATRASraw <- function(x)nrow(x[[2]])
 
+##' @export
 summary.DATRASraw <- function(object, ...){
   x <- object
   print(x);
@@ -333,6 +339,7 @@ readExchange <- function(zipfile,strict=TRUE){
 ##' @param pattern Pattern that the exchange files match.
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object
+##' @export
 readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
   zipfiles <- dir(path=path,pattern=pattern,recursive=TRUE,full.names=TRUE)
   all <- lapply(zipfiles,readExchange,strict=strict)
@@ -352,8 +359,6 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' @title Combine multiple DATRASraw objects 
 ##' @param ... DATRASraw objects to put together.
 ##' @return Merged dataset.
-##' @method c DATRASraw
-##' @export c DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -362,6 +367,7 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' x <- readExchange(file1)
 ##' y <- readExchange(file2)
 ##' z <- c(x,y)
+##' @export
 ## ---------------------------------------------------------------------------
 c.DATRASraw <- function(...){
   testUniqueHaulID <- function(args){
@@ -601,6 +607,7 @@ fixMissingHaulIds<-function(d,strict=TRUE){
 ## Method for adding the length spectrum to the DATRASraw format
 ## Compact format is used, i.e. dataframes with numbers in each length category are added to d2.
 ## ---------------------------------------------------------------------------
+##' @export
 addSpectrum <- function(x,cm.breaks=seq(min(x[[3]]$LngtCm,na.rm=TRUE),max(x[[3]]$LngtCm,na.rm=TRUE)+by,by=by),
                             by=getAccuracyCM(x))
   {
@@ -651,8 +658,7 @@ getAccuracyCM <- function(x){
 ##' @param ... Not used.
 ##' @return data.frame with one line for each response along with associated
 ##' covariates.
-##' @method as.data.frame DATRASraw
-##' @export as.data.frame DATRASraw
+##' @export
 ## ---------------------------------------------------------------------------
 as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
                                     cleanup=TRUE){
@@ -712,8 +718,6 @@ as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
 ##' @param xlim Longitude range of plot.
 ##' @param ylim Latitude range of plot.
 ##' @param ... Controlling plot of positions.
-##' @method plot DATRASraw
-##' @export plot DATRASraw
 ##' @examples
 ##' \dontshow{
 ##' file1 <- system.file("exchange","Exchange1.zip",package="DATRAS")
@@ -724,6 +728,7 @@ as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
 ##' ##' Add response variable
 ##' y <- addSpectrum(y)
 ##' plot(y,col="red")
+##' @export
 plot.DATRASraw <- function(x,add=FALSE,pch=16,
                            plot.squares=!add,
                            plot.map=!add,
@@ -802,8 +807,7 @@ tilePlot <- function(expr,xlim,ylim,pol){
 }
 ##' @title Positions can be added to existing plot.
 ##' @rdname plot.DATRASraw
-##' @method points DATRASraw
-##' @export points DATRASraw
+##' @export
 points.DATRASraw <- function(x,...){
   plot(x,add=TRUE,...)
 }
@@ -819,6 +823,7 @@ points.DATRASraw <- function(x,...){
 ##' @param select Vector of variable names to select from shapefile (default is to select all names)
 ##' @param ... Passed to \code{readShapeSpatial}
 ##' @return Modified DATRASraw object
+##' @export
 addSpatialData <- function(d,shape,select=NULL,...){
   require(maptools)
   if(is.character(shape)){
