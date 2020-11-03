@@ -90,9 +90,9 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
       return(emptyDF(strsplit(headers[i],",")[[1]]))
     }
     if( grepl("SpecCodeType",headers[i]) ){
-        print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings,colClasses=c("SpecCodeType"="character") )))
+        print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings,colClasses=c("SpecCodeType"="character"),stringsAsFactors=TRUE )))
     } else {
-        print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings)))
+        print(system.time(ans <- read.csv(file,nrow=nrow[i],skip=skip[i],na.strings=na.strings,stringsAsFactors=TRUE)))
     }
 
     ans$StNo <- as.character(ans$StNo)
@@ -434,11 +434,11 @@ addExtraVariables <- function(IBTS){
   ## e.g. LngtClass=500 with "." corresponds to 50.0cm-50.1cm.
   LngtCode2cm <- c("."=0.1, "0"=0.1, "1"=1, "2"=1, "5"=1) ## Valid for IBTS. Also BITS ? - YES!
   file <- system.file("SpeciesTable.csv",package="DATRAS")
-  specdat <- read.csv(file,skip=3,strip.white = TRUE)
+  specdat <- read.csv(file,skip=3,strip.white = TRUE,stringsAsFactors=TRUE)
   SpecCode2species <- structure(as.character(specdat$Species), names=specdat$TSN.code)
 
   file <- system.file("WoRMSTable.csv",package="DATRAS")
-  specdat <- read.csv(file)
+  specdat <- read.csv(file,stringsAsFactors=TRUE)
   WSpecCode2species <- structure(as.character(specdat$ScientificName_WoRMS),
                                  names=specdat$WoRMS_AphiaID)
 
@@ -486,7 +486,7 @@ addExtraVariables <- function(IBTS){
 
   ## Add roundfish area numbers
   file <- system.file("roundfish.csv",package="DATRAS")
-  rf <- read.table(file)
+  rf <- read.table(file,stringsAsFactors=TRUE)
   d2$Roundfish=NA;
   for(r in 1:nrow(rf))  d2$Roundfish[ d2$StatRec==as.character(rf[r,2]) ] = rf[r,1];
   d2$Roundfish=as.factor(d2$Roundfish);
