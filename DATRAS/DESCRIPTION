@@ -28,3 +28,4 @@ Collate:
     'plotVBG.R'
     'downloadExchange.R'
     'AgeFunctions.R'
+RoxygenNote: 7.1.1
