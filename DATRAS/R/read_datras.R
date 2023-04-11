@@ -475,9 +475,11 @@ addExtraVariables <- function(IBTS){
   ##    DATRAS with data type S by present time are misinterpreted by the data submitters and
   ##    are not different from the submissions with data type R.
   ## HLNoAtLngt for DataTypes R and S should be multiplied with SubFactor!
+  ## Note, some BITS hauls (all LT and some DK) have dataType C but SubFactor>1 - two multipliers needed!
   d3 <- merge(d3,d2[c("haul.id","HaulDur","DataType")],by="haul.id",all.x=TRUE,sort=FALSE)
-  multiplier <- ifelse(d3$DataType=="C",d3$HaulDur/60,d3$SubFactor)
-  d3$Count <- d3$HLNoAtLngt*multiplier
+  multiplier1 <- ifelse(d3$DataType=="C",d3$HaulDur/60,1)
+  multiplier2 <- ifelse(!is.na(d3$SubFactor),d3$SubFactor,1)
+  d3$Count <- d3$HLNoAtLngt*multiplier1*multiplier2
   
   d2$abstime <- local(Year+(Month-1)*1/12+(Day-1)/365,d2)
   d2$timeOfYear <- local((Month-1)*1/12+(Day-1)/365,d2)
