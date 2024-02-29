@@ -230,7 +230,31 @@ foreach($years as $year){
   curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
   $ret = curl_exec($ch); // Get result after login page.
 
+  // Radio button select 'All species'
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
+  $postfields['__VIEWSTATE'] = $viewstate;
+  $postfields['__EVENTVALIDATION'] = $eventValidation;
+  $postfields['ctl00$ContentPlaceHolder1$RadioButtonList1']='0';
+  $postfields['__EVENTTARGET']='ctl00$ContentPlaceHolder1$RadioButtonList1';
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+  $ret = curl_exec($ch); // Get result after login page.
 
+  // Check box select 'All'
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
+  $postfields['__VIEWSTATE'] = $viewstate;
+  $postfields['__EVENTVALIDATION'] = $eventValidation;
+  $postfields['ctl00$ContentPlaceHolder1$cblist_Species$0']='NONE';
+  $postfields['__EVENTTARGET']='ctl00$ContentPlaceHolder1$cblist_Species$0';
+  curl_setopt($ch, CURLOPT_POST, 1);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+  $ret = curl_exec($ch); // Get result after login page.
 
 
   preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate); 

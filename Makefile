@@ -23,7 +23,7 @@ pdf:
 	R CMD Rd2pdf --no-preview $(PACKAGE)
 
 clean:
-	rm -f DATRAS_1.0.tar.gz
+	rm -f DATRAS_*.tar.gz
 	rm -f DATRAS.pdf
 
 check:
