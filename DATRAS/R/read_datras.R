@@ -507,12 +507,12 @@ addExtraVariables <- function(IBTS){
   d1$haul.id <- factor(d1$haul.id,levels=levels(d2$haul.id))
   d3$haul.id <- factor(d3$haul.id,levels=levels(d2$haul.id))
 
-  ## Drop duplicated rows in hydro data
+  ## Check for duplicated rows in hydro data
   dups <- duplicated(d2)
   if( any(dups) ){
-      cat("WARNING: ", sum(dups), " duplicated HH rows removed.\n")
-      d2 <- d2[ !duplicated(d2) , ]
+      stop("Duplicated rows found in HH data - data file is corrupt")
   }
+  
   ## ---------------------------------------------------------------------------
   ## "haul.id" consistent with Hydro data ? 
   ## ---------------------------------------------------------------------------
