@@ -378,6 +378,9 @@ c.DATRASraw <- function(...){
   args <- list(...)
   testUniqueHaulID(args)
   args <- lapply(args,unclass) ## because do_mapply dispatch on length
+  ## rbind loses names(dimnames(.)). Get names from 1st argument (NULL if missing object):
+  N.ndn    <- names(dimnames(args[[1]][["HH"]][["N"]]))
+  Nage.ndn <- names(dimnames(args[[1]][["HH"]][["Nage"]]))
   ## Add missing variable names with warning
   argnames <- Map(Map,list("names"),args)
   union <- function(...)unique(c(...))
@@ -408,6 +411,9 @@ c.DATRASraw <- function(...){
   ## Note that rbind drops all zero-row data.frames - hence levels of zero-length
   ## factor will be dropped. Have to fix this:
   ans <- refactorHaulLevels(ans)
+  ## rbind loses names(dimnames(.)). Re-assign from 1st argument (NULL allowed):
+  names(dimnames(ans[["HH"]][["N"]])) <- N.ndn
+  names(dimnames(ans[["HH"]][["Nage"]])) <- Nage.ndn
   class(ans) <- "DATRASraw"
   ans
 }
