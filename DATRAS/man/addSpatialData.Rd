@@ -13,7 +13,7 @@ addSpatialData(d, shape, select = NULL, ...)
 
 \item{select}{Vector of variable names to select from shapefile (default is to select all names)}
 
-\item{...}{Passed to \code{readShapeSpatial}}
+\item{...}{Passed to \code{st_read}}
 }
 \value{
 Modified DATRASraw object
@@ -21,6 +21,6 @@ Modified DATRASraw object
 \description{
 Add spatial data from a shapefile to a DATRASraw object.
 Longitude-latitude coordinates from DATRASraw are used to
-lookup the information in the shapefile. Requires the package
-\code{maptools}.
+lookup the information in the shapefile. Requires the packages
+\code{sf} and \code{sp}.
 }

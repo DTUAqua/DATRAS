@@ -823,26 +823,30 @@ points.DATRASraw <- function(x,...){
 
 ##' Add spatial data from a shapefile to a DATRASraw object.
 ##' Longitude-latitude coordinates from DATRASraw are used to
-##' lookup the information in the shapefile. Requires the package
-##' \code{maptools}.
+##' lookup the information in the shapefile. Requires the packages
+##' \code{sf} and \code{sp}.
 ##'
 ##' @title Add spatial data from shapefile.
 ##' @param d DATRASraw object
 ##' @param shape Shapefile or valid filename of existing shapefile.
 ##' @param select Vector of variable names to select from shapefile (default is to select all names)
-##' @param ... Passed to \code{readShapeSpatial}
+##' @param ... Passed to \code{st_read}
 ##' @return Modified DATRASraw object
 ##' @export
 addSpatialData <- function(d,shape,select=NULL,...){
-  require(maptools)
+  require(sf)
+  require(sp)
+    
   if(is.character(shape)){
     if(file.exists(shape)){
-      shape <- readShapeSpatial(shape)
+        shape <- sf::st_read(shape)
+        shape <- as(shape,"Spatial")
     }
   }
   i <- complete.cases(d[[2]][c("lon","lat")])
   tmp <- d[[2]][i,,drop=FALSE]
   coordinates(tmp) <- ~lon+lat
+  sp::proj4string(tmp) <-  sp::proj4string(shape)        
   xtra <- over(tmp, shape)
   if(any(!i)){
     warning(paste(sum(!i),"incomplete lon/lat pairs will get NA as spatial data."))
