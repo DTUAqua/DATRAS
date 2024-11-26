@@ -130,7 +130,12 @@ predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
   } else if(type=="ALK"){
     ALK=mylapply(1:nrow(dat[[2]]),NageByHaul,x=x,returnALK=TRUE)
     ##n3=array(unlist(ALK),c(nrow(dat[[2]]),N,length(ages)+1 ) )
-    ##colnames(n3)<-c( as.character(ages), paste(lastAge,"+",sep=""));
+    ALK = lapply(ALK, function(key){
+        colnames(key)=c(ages, max(ages)+1);
+        cm.breaks=attr(dat,"cm.breaks");
+        rownames(key) = cm.breaks[-length(cm.breaks)];
+        return(key)
+       }) 
     return(ALK);
   } else stop("Unknown type");
 }
