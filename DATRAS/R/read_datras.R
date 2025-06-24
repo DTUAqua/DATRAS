@@ -96,7 +96,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     }
 
     ans$StNo <- as.character(ans$StNo)
-    ans <- renameDATRAS(ans)  
+    ans <- renameDATRAS(ans)
     ans
   })
   ## Name fields with record type (account for possibly empty CA or HL data.frames)
@@ -106,7 +106,7 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
     else if ("HLNoAtLngt" %in% names(x)) "HL"
     else stop("Could not determine record types.")
   })
-  
+
   ## Data components must come in specific order
   d <- d[c("CA", "HH", "HL")]
   cat("Classes of the variables\n")
@@ -156,7 +156,7 @@ renameDATRAS <- function(x){
 ##' performed on the component and the subsetting is continued to the next
 ##' subset criteria. The number of subset critera can be arbitrary and is
 ##' given through the \code{...} argument.
-##' 
+##'
 ##' @title Subsetting a DATRASraw object.
 ##' @param x Take subset of this dataset.
 ##' @param ... One or more subset criteria.
@@ -320,13 +320,22 @@ summary.DATRASraw <- function(object, ...){
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object.
 ##' @export
-readExchange <- function(zipfile,strict=TRUE){
-  if(length(zipfile)>1)return(do.call("c",lapply(zipfile,readExchange,strict=strict)))
+readExchange <- function(zipfile, strict=TRUE){
+    if(length(zipfile) > 1){
+        all <- lapply(zipfile, readExchange, strict=strict)
+        return(do.call("c", all[!sapply(all, is.null)]))
+    }
   tempdir <- tempdir()
   csvfile <- unzip(zipfile,exdir=tempdir)[1]
   cat("Processing csv file:\n")
   print(csvfile)
-  readICES(csvfile,strict=strict)
+  ret <- tryCatch({
+      readICES(csvfile, strict = strict)
+  }, error = function(e) {
+      message("Error in: ", conditionMessage(e))
+      NULL
+  })
+  return(ret)
 }
 
 ## ---------------------------------------------------------------------------
@@ -336,7 +345,7 @@ readExchange <- function(zipfile,strict=TRUE){
 ##' Calls \code{readExchange} on all the exchange files in the folder and
 ##' combines the results.
 ##' @title Read all exchange files in a folder.
-##' @param path File path. 
+##' @param path File path.
 ##' @param pattern Pattern that the exchange files match.
 ##' @param strict if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.
 ##' @return DATRASraw object
@@ -344,7 +353,7 @@ readExchange <- function(zipfile,strict=TRUE){
 readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
   zipfiles <- dir(path=path,pattern=pattern,recursive=TRUE,full.names=TRUE)
   all <- lapply(zipfiles,readExchange,strict=strict)
-  do.call("c",all)
+  do.call("c", all[!sapply(all, is.null)])
 }
 
 ## ---------------------------------------------------------------------------
@@ -356,8 +365,8 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ##' If the same haul.id is present within different datasets the method will stop.
 ##' If a variable name is only present in some of the datasets, the variable will be
 ##' added to the remaining datasets (filled with NA) and a warning will be triggered.
-##' 
-##' @title Combine multiple DATRASraw objects 
+##'
+##' @title Combine multiple DATRASraw objects
 ##' @param ... DATRASraw objects to put together.
 ##' @return Merged dataset.
 ##' @examples
@@ -372,7 +381,7 @@ readExchangeDir <- function(path=".",pattern=".zip",strict=TRUE){
 ## ---------------------------------------------------------------------------
 c.DATRASraw <- function(...){
   testUniqueHaulID <- function(args){
-    x <- lapply(args,function(x)levels(x$haul.id))
+      x <- lapply(args,function(x)levels(x$haul.id))
     if(length(unique(unlist(x))) != length(unlist(x)))stop("Haul ids must be unique.")
   }
   args <- list(...)
@@ -466,10 +475,10 @@ addExtraVariables <- function(IBTS){
   d1$haul.id <- eval(haul.id,d1)
   d2$haul.id <- eval(haul.id,d2)
   d3$haul.id <- eval(haul.id,d3)
-  
+
   ## Reconstruct the original count-variable (ICES have standardized to 1 hour).
   ## DataType:
-  ## C: corrected to 1 hour 
+  ## C: corrected to 1 hour
   ## R: raw
   ## S: ICES February 2012:
   ##    DATRAS with data type S by present time are misinterpreted by the data submitters and
@@ -480,7 +489,7 @@ addExtraVariables <- function(IBTS){
   multiplier1 <- ifelse(d3$DataType=="C",d3$HaulDur/60,1)
   multiplier2 <- ifelse(!is.na(d3$SubFactor),d3$SubFactor,1)
   d3$Count <- d3$HLNoAtLngt*multiplier1*multiplier2
-  
+
   d2$abstime <- local(Year+(Month-1)*1/12+(Day-1)/365,d2)
   d2$timeOfYear <- local((Month-1)*1/12+(Day-1)/365,d2)
   d2$TimeShotHour=as.integer(d2$TimeShot/100) + (d2$TimeShot%%100)/60;
@@ -492,9 +501,9 @@ addExtraVariables <- function(IBTS){
   d2$Roundfish=NA;
   for(r in 1:nrow(rf))  d2$Roundfish[ d2$StatRec==as.character(rf[r,2]) ] = rf[r,1];
   d2$Roundfish=as.factor(d2$Roundfish);
- 
+
   ## ---------------------------------------------------------------------------
-  ## Allow some exceptions (with warning) 
+  ## Allow some exceptions (with warning)
   ## ---------------------------------------------------------------------------
   diff <- setdiff(levels(d2$haul.id),levels(d3$haul.id)) ## Hauls for which length is missing
   if(length(diff)>0){
@@ -512,15 +521,15 @@ addExtraVariables <- function(IBTS){
   if( any(dups) ){
       stop("Duplicated rows found in HH data - data file is corrupt")
   }
-  
+
   ## ---------------------------------------------------------------------------
-  ## "haul.id" consistent with Hydro data ? 
+  ## "haul.id" consistent with Hydro data ?
   ## ---------------------------------------------------------------------------
   stopifnot(nlevels(d3$haul.id) == nrow(d2))
   ##stopifnot(identical(levels(h3),levels(h2)))
   cat("Consistency check passed\n")
 
-  
+
   IBTS[[1]] <- d1
   IBTS[[2]] <- d2
   IBTS[[3]] <- d3
@@ -530,7 +539,7 @@ addExtraVariables <- function(IBTS){
     IBTS[[i]]$Year <- factor(IBTS[[i]]$Year)
     IBTS[[i]]$Quarter <- factor(IBTS[[i]]$Quarter)
   }
-  
+
   IBTS
 }
 
@@ -557,8 +566,8 @@ fixMissingHaulIds<-function(d,strict=TRUE){
 
   d1=d[[1]][is.na(d[[1]]$haul.id),]
   noNA=nrow(d1)
-    
-  d2=d[[2]][,c("StatRec","Year","Quarter","Country","Ship","haul.id","Roundfish")];  
+
+  d2=d[[2]][,c("StatRec","Year","Quarter","Country","Ship","haul.id","Roundfish")];
   d2$StatRec=as.character(d2$StatRec);
   d1$AreaCode=as.character(d1$AreaCode);
   d1$StatRec=d1$AreaCode
@@ -584,7 +593,7 @@ fixMissingHaulIds<-function(d,strict=TRUE){
     if(length(nonUnique>0)) warning(paste(noNA,"age data haul ids missing:",matchedUniquely,"entries could be matched uniquely to a haul, the rest (",newnoNA,") will be left as 'NA' and dropped by any subsequent subsetting"));
     return(d);
   }
-  
+
   nomatch=dm[is.na(dm$haul.id),]
   ##cat(nrow(nomatch), " are still unmatched - using roundfish area instead of rectangle\n")
   if(nrow(nomatch)>0){
@@ -593,14 +602,14 @@ fixMissingHaulIds<-function(d,strict=TRUE){
     sel=which(nchar(nomatch$StatRec)==1)
     nomatch$Roundfish=as.character(nomatch$Roundfish);
     nomatch$Roundfish[sel]=nomatch$StatRec[sel]
-    
+
     dm2=merge(nomatch,d2,all.x=TRUE,by=c("Roundfish","Year","Quarter","Country","Ship"),sort=FALSE,suffixes=c(".x",""))
     dm2=dm2[sample(1:nrow(dm2)),]; ## permute to get some more random assignments when duplicates are dropped
     dm2=dm2[!duplicated(dm2$rowno),]
 
     result=rbind( dm[,c("rowno","haul.id")],dm2[,c("rowno","haul.id")])
   } else result=dm[,c("rowno","haul.id")];
-  
+
   result=result[order(result$rowno),]
 
   d[[1]][is.na(d[[1]]$haul.id),]$haul.id=result$haul.id;
@@ -657,13 +666,13 @@ getAccuracyCM <- function(x){
 ##' response matrix. The wide format thus takes up less memory.
 ##' If multiple response names are available in \code{x} (e.g. both "N" and
 ##' "Nage") then the user must select one through the argument \code{response}.
-##' 
+##'
 ##' @title Convert DATRASraw to data.frame suitable for statistical analysis.
 ##' @param x DATRASraw object to be converted.
 ##' @param format Long or wide format?
 ##' @param response Name of response variable (only needed if data has multiple
-##' response variables). 
-##' @param cleanup Remove useless information? 
+##' response variables).
+##' @param cleanup Remove useless information?
 ##' @param ... Not used.
 ##' @return data.frame with one line for each response along with associated
 ##' covariates.
@@ -676,7 +685,7 @@ as.data.frame.DATRASraw <- function(x, ..., format=c("long","wide"),response,
   x$Species <- paste(levels(factor(x[[3]]$Species)),collapse="|")
   x$Species <- factor(x$Species)
   x <- x[[2]]
-  if(cleanup){ ## Remove useless information  
+  if(cleanup){ ## Remove useless information
     rownames(x) <- NULL
     x$RecordType <- NULL
     allNA <- sapply(x,function(x)all(is.na(x)))
@@ -753,7 +762,7 @@ plot.DATRASraw <- function(x,add=FALSE,pch=16,
     rglon <- lapply(pol,function(x)range(x$lon))
     rglat <- lapply(pol,function(x)range(x$lat))
     pollist <- Map(function(x,y)data.frame(lon=x[c(1,1,2,2)],lat=y[c(1,2,2,1)]),rglon,rglat)
-    
+
   }
   ## End experiment
   sq <- unique(icesSquare(x))
@@ -836,7 +845,7 @@ points.DATRASraw <- function(x,...){
 addSpatialData <- function(d,shape,select=NULL,...){
   require(sf)
   require(sp)
-    
+
   if(is.character(shape)){
     if(file.exists(shape)){
         shape <- sf::st_read(shape)
@@ -846,7 +855,7 @@ addSpatialData <- function(d,shape,select=NULL,...){
   i <- complete.cases(d[[2]][c("lon","lat")])
   tmp <- d[[2]][i,,drop=FALSE]
   coordinates(tmp) <- ~lon+lat
-  sp::proj4string(tmp) <-  sp::proj4string(shape)        
+  sp::proj4string(tmp) <-  sp::proj4string(shape)
   xtra <- over(tmp, shape)
   if(any(!i)){
     warning(paste(sum(!i),"incomplete lon/lat pairs will get NA as spatial data."))
@@ -854,7 +863,7 @@ addSpatialData <- function(d,shape,select=NULL,...){
     j[i] <- 1:sum(i)
     j[!i] <- NA
     xtra <- xtra[j,,drop=FALSE]
-  }  
+  }
   if(!is.null(select))xtra <- xtra[select]
   nm <- names(xtra)
   if(length(intnm <- intersect(names(d[[2]]),nm))){
