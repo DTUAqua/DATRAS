@@ -1,11 +1,11 @@
 <?php
 /**
  datras.php
- 
+
  Script for downloading DATRAS data.
- 
+
  Requires the PHP command line interface installed (php5-cli in Debian).
- 
+
  Authors: Kasper Kristensen and Casper W. Berg, DTU Aqua.
 */
 
@@ -19,10 +19,10 @@ if(count($argv)<2){
   print("\n");
   print("Available surveys:\n");
 
-  $url = "http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx";
+  $url = "https://datras.ices.dk/Data_products/Download/Download_Data_public.aspx";
   $ckfile = tempnam("/tmp", "CURLCOOKIE");
   $useragent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.2 (KHTML, like Gecko) Chrome/5.0.342.3 Safari/533.2';
-  
+
   $username = "XXXXXXXXXX";
   $password = "XXXXXXXXXX";
 
@@ -31,9 +31,9 @@ if(count($argv)<2){
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_USERAGENT, $useragent);
-  
+
   $html = curl_exec($ch);
-  
+
   curl_close($ch);
 
   preg_match_all('~<option.*value=".*">(.*?)</option>~', $html, $surveys);
@@ -55,7 +55,7 @@ function updatecodes($postfields,$ret){
 };
 
 
-$url = "http://datras.ices.dk/Data_products/Download/Download_Data_public.aspx";
+$url = "https://datras.ices.dk/Data_products/Download/Download_Data_public.aspx";
 $ckfile = tempnam("/tmp", "CURLCOOKIE");
 $useragent = 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.2 (KHTML, like Gecko) Chrome/5.0.342.3 Safari/533.2';
 
@@ -144,7 +144,7 @@ $origstate=$postfields;
 
 
 foreach($years as $year){
-  
+
   //Init
   $ch = curl_init();
 
@@ -184,10 +184,10 @@ foreach($years as $year){
 
   //print_r($postfields);
 
-  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate); 
-  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation); 
-  $viewstate = $viewstate[1]; 
-  $eventValidation = $eventValidation[1]; 
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
 
 
   $postfields['__EVENTTARGET'] = "";
@@ -218,10 +218,10 @@ foreach($years as $year){
   //print_r ($postfields);
 
 
-  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate); 
-  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation); 
-  $viewstate = $viewstate[1]; 
-  $eventValidation = $eventValidation[1]; 
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
   $postfields['__VIEWSTATE'] = $viewstate;
   $postfields['__EVENTVALIDATION'] = $eventValidation;
   $postfields['ctl00$ContentPlaceHolder1$cblist_Ship$0']='NONE';
@@ -257,10 +257,10 @@ foreach($years as $year){
   $ret = curl_exec($ch); // Get result after login page.
 
 
-  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate); 
-  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation); 
-  $viewstate = $viewstate[1]; 
-  $eventValidation = $eventValidation[1]; 
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
   $postfields['__VIEWSTATE'] = $viewstate;
   $postfields['__EVENTVALIDATION'] = $eventValidation;
   curl_setopt($ch, CURLOPT_POST, 1);
@@ -275,10 +275,10 @@ foreach($years as $year){
   /* $postfields['ctl00$ContentPlaceHolder1$cblist_Ship$4']='3051'; */
   $postfields['__EVENTTARGET']='ctl00$ContentPlaceHolder1$btn_submit';
 
-  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate); 
-  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation); 
-  $viewstate = $viewstate[1]; 
-  $eventValidation = $eventValidation[1]; 
+  preg_match('~<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />~', $ret, $viewstate);
+  preg_match('~<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />~', $ret, $eventValidation);
+  $viewstate = $viewstate[1];
+  $eventValidation = $eventValidation[1];
   $postfields['__VIEWSTATE'] = $viewstate;
   $postfields['__EVENTVALIDATION'] = $eventValidation;
   curl_setopt($ch, CURLOPT_POST, 1);
