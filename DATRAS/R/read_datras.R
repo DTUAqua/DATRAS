@@ -116,14 +116,19 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
   })
 
   ## Data components must come in specific order
-  d <- d[c("CA", "HH", "HL")]
+  dout <- vector("list", 3)
+  if (!is.null(d$CA)) dout[[1]] <- d$CA
+  if (!is.null(d$HH)) dout[[2]] <- d$HH
+  if (!is.null(d$HL)) dout[[3]] <- d$HL
+  names(dout) <- c("CA","HH","HL")
+  d <- dout
   cat("Classes of the variables\n")
   print(lapply(d,function(x)sapply(x,class)))
-  if(sum(sapply(d,nrow)) + length(i) != length(lines))stop("csv file appears to be corrupt.")
+  if(sum(sapply(d[!sapply(d, is.null)],nrow)) + length(i) != length(lines))stop("csv file appears to be corrupt.")
   ## Inconsistencies with variable names are resolved here
   ## =====================================================
   ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
-  if(is.null(d[[1]]$StatRec))d[[1]]$StatRec <- d[[1]]$AreaCode
+  if(!is.null(d$CA) && is.null(d[[1]]$StatRec))d[[1]]$StatRec <- d[[1]]$AreaCode
   d <- addExtraVariables(d)
   d <- fixMissingHaulIds(d,strict=strict)
   class(d) <- "DATRASraw"
@@ -392,19 +397,21 @@ c.DATRASraw <- function(...){
   unionNames <- do.call("Map",c(list("union"),argnames))
   addMissingVariables <- function(x){
     out <- lapply(1:3,function(i){
-      ans <- x[[i]]
-      missingVariables <- setdiff( unionNames[[i]],names(ans) )
-      if(length(missingVariables)>0){
-        warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
-                paste(missingVariables,collapse=", "),
-                ". NA will be inserted.")
-        if(nrow(ans)>0){
-            ans[missingVariables] <- NA
-        } else {
-            for(ii in 1:length(missingVariables)) ans[,missingVariables[ii]] <- logical(0)
+        ans <- x[[i]]
+        if (!is.null(ans)) {
+            missingVariables <- setdiff( unionNames[[i]],names(ans) )
+            if(length(missingVariables)>0){
+                warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
+                        paste(missingVariables,collapse=", "),
+                        ". NA will be inserted.")
+                if(nrow(ans)>0){
+                    ans[missingVariables] <- NA
+                } else {
+                    for(ii in 1:length(missingVariables)) ans[,missingVariables[ii]] <- logical(0)
+                }
+            }
         }
-      }
-      ans
+        ans
     })
     names(out) <- names(x)
     out
@@ -484,12 +491,13 @@ addExtraVariables <- function(IBTS){
   ##    are not different from the submissions with data type R.
   ## HLNoAtLngt for DataTypes R and S should be multiplied with SubFactor!
   ## Note, some BITS hauls (all LT and some DK) have dataType C but SubFactor>1 - two multipliers needed!
-  d3 <- merge(d3,d2[c("haul.id","HaulDur","DataType")],by="haul.id",all.x=TRUE,sort=FALSE)
+  d3 <- merge(d3[!(colnames(d3) %in% c("HaulDur","DataType"))],
+              d2[c("haul.id","HaulDur","DataType")],by="haul.id",all.x=TRUE,sort=FALSE)
   multiplier1 <- ifelse(d3$DataType=="C",d3$HaulDur/60,1)
   multiplier2 <- ifelse(!is.na(d3$SubFactor),d3$SubFactor,1)
   d3$Count <- d3$HLNoAtLngt*multiplier1*multiplier2
 
-  d2$abstime <- local(Year+(Month-1)*1/12+(Day-1)/365,d2)
+  d2$abstime <- local(as.integer(Year)+(Month-1)*1/12+(Day-1)/365,d2)
   d2$timeOfYear <- local((Month-1)*1/12+(Day-1)/365,d2)
   d2$TimeShotHour=as.integer(d2$TimeShot/100) + (d2$TimeShot%%100)/60;
   d2 <- transform(d2,lon=ShootLong,lat=ShootLat)
@@ -506,9 +514,9 @@ addExtraVariables <- function(IBTS){
   ## ---------------------------------------------------------------------------
   diff <- setdiff(levels(d2$haul.id),levels(d3$haul.id)) ## Hauls for which length is missing
   if(length(diff)>0){
-    cat("========= WARNING: ============\n")
-    cat("Hauls without length info will be interpreted as empty hauls:\n")
-    print(diff)
+      cat("========= WARNING: ============\n")
+      cat("Hauls without length info will be interpreted as empty hauls:\n")
+      print(diff)
   }
 
   ## Identical haul levels
