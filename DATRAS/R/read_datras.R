@@ -635,7 +635,7 @@ fixMissingHaulIds<-function(d,strict=TRUE){
 addSpectrum <- function(x,cm.breaks=seq(min(x[[3]]$LngtCm,na.rm=TRUE),max(x[[3]]$LngtCm,na.rm=TRUE)+by,by=by),
                             by=getAccuracyCM(x))
   {
-    stopifnot(class(x)=="DATRASraw");
+    stopifnot(inherits(x, "DATRASraw"));
     if(length(levels(x[[3]]$Species))>1) warning("Multiple species found - spectrum will contain all species");
     if(any( is.na(x[[2]]$DataType))){
       warning(sum(is.na(x[[2]]$DataType))," NA's found in DataType. These hauls will be removed")
