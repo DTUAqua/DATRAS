@@ -430,7 +430,7 @@ c.DATRASraw <- function(...){
 ## Utility functions used when reading DATRAS data from a file
 ## ---------------------------------------------------------------------------
 addHaulID <- function(d){
-  haul.id <- quote( factor(paste(Year,Quarter,Country,Ship,Gear,StNo,HaulNo,sep=":"))  )
+  haul.id <- quote( factor(paste(Survey,Year,Quarter,Country,Ship,Gear,StNo,HaulNo,sep=":"))  )
   for(i in 1:3)d[[i]]$haul.id <- eval(haul.id,d[[i]])
   d
 }
@@ -476,7 +476,7 @@ addExtraVariables <- function(IBTS){
   }
   d3 <- mytransform(d3)
   if(!is.null(d1)) d1 <- mytransform(d1)
-  haul.id <- quote( factor(paste(Year,Quarter,Country,Ship,Gear,StNo,HaulNo,sep=":"))  )
+  haul.id <- quote( factor(paste(Survey,Year,Quarter,Country,Ship,Gear,StNo,HaulNo,sep=":"))  )
   if(!is.null(d1)) d1$haul.id <- eval(haul.id,d1)
   d2$haul.id <- eval(haul.id,d2)
   d3$haul.id <- eval(haul.id,d3)
