@@ -14,7 +14,7 @@ Suggests:
     mapdata,
     maps,
     mgcv,
-    multicore,
+    parallel
 Imports:
     icesDatras
 License: GPL
@@ -27,4 +27,4 @@ Collate:
     'plotVBG.R'
     'downloadExchange.R'
     'AgeFunctions.R'
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2

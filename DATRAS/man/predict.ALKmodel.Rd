@@ -13,7 +13,7 @@
 
 \item{type}{the type of prediction required. The default is "Nage", which is numbers-at-age for each haul. The other option is "ALK", which gives a list of age-length keys, one for each haul.}
 
-\item{mc.cores}{use this number of cores (parallel computation via multicore library)}
+\item{mc.cores}{use this number of cores (parallel computation via \code{parallel} library)}
 
 \item{...}{unused}
 }
