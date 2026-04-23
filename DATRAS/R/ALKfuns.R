@@ -86,7 +86,7 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
   x[[1]]=subset(x[[1]],!is.na(Year) & !is.na(Age) & !is.na(LngtCm))
   
   mylapply<-function(...){
-    hasmc=(mc.cores>1 && require(multicore,quietly=TRUE));
+    hasmc=(mc.cores>1 && require(parallel,quietly=TRUE));
     if(!hasmc) return(lapply(...)) else return(mclapply(...,mc.cores=mc.cores))
   }
   if(verbose) cat("Fitting model...");
@@ -102,7 +102,7 @@ fitALK<-function(x,minAge,maxAge,mc.cores=1,model= c( "cra~LngtCm", "cra~poly(Ln
 ##' @param object An object of class 'ALKmodel'
 ##' @param newdata optionally, a DATRASraw object to predict 
 ##' @param type the type of prediction required. The default is "Nage", which is numbers-at-age for each haul. The other option is "ALK", which gives a list of age-length keys, one for each haul. 
-##' @param mc.cores use this number of cores (parallel computation via multicore library)
+##' @param mc.cores use this number of cores (parallel computation via \code{parallel} library)
 ##' @param ... unused
 ##' @return A matrix if type equals "Nage", and a list of matrices if type equals "ALK".
 ##' @export
@@ -118,7 +118,7 @@ predict.ALKmodel<-function(object,newdata=NULL,type="Nage",mc.cores=1,...){
   len=attr(dat,"cm.breaks")[1:ncol(dat$N)];
   N=length(len);
   mylapply<-function(...){
-    hasmc=(mc.cores>1 && require(multicore,quietly=TRUE));
+    hasmc=(mc.cores>1 && require(parallel,quietly=TRUE));
     if(!hasmc) return(lapply(...)) else return(mclapply(...,mc.cores=mc.cores))
   }
   if(type=="Nage"){
