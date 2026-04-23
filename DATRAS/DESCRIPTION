@@ -27,4 +27,5 @@ Collate:
     'plotVBG.R'
     'downloadExchange.R'
     'AgeFunctions.R'
+Encoding: UTF-8
 RoxygenNote: 7.3.2
