@@ -119,11 +119,11 @@ readICES <- function(file="IBTS.csv",na.strings=c("-9","-9.0","-9.00","-9.0000")
   d <- d[c("CA", "HH", "HL")]
   cat("Classes of the variables\n")
   print(lapply(d,function(x)sapply(x,class)))
-  if(sum(sapply(d,nrow)) + length(i) != length(lines))stop("csv file appears to be corrupt.")
+  if(sum(sapply(d[!sapply(d,is.null)],nrow)) + length(i) != length(lines))stop("csv file appears to be corrupt.")
   ## Inconsistencies with variable names are resolved here
   ## =====================================================
   ## Ices-square variable should have the same name ("StatRec") in age and hydro data.
-  if(is.null(d[[1]]$StatRec))d[[1]]$StatRec <- d[[1]]$AreaCode
+  if(!is.null(d[[1]]) && is.null(d[[1]]$StatRec))d[[1]]$StatRec <- d[[1]]$AreaCode
   d <- addExtraVariables(d)
   d <- fixMissingHaulIds(d,strict=strict)
   class(d) <- "DATRASraw"
@@ -180,6 +180,8 @@ renameDATRAS <- function(x){
 ## ---------------------------------------------------------------------------
 subset.DATRASraw <- function(x,...,na.rm=TRUE){
   old.nrow <- sapply(x,nrow) ## To test what parts of x have been changed
+  old.nrow[sapply(old.nrow,is.null)] <- 0
+  old.nrow <- unlist(old.nrow)
   args <- as.list(match.call()[-1][-1])
   vars <- lapply(args,all.vars)
   na2false <- function(x){
@@ -199,15 +201,17 @@ subset.DATRASraw <- function(x,...,na.rm=TRUE){
     if(fit[2]){ ## ===>> haul.id subset
       x[[2]] <- x[[2]][na2false(eval(arg,x[[2]],parent.frame())),]
       lev <- levels(factor(x[[2]]$haul.id))
-      x[[1]] <- x[[1]][x[[1]]$haul.id %in% lev,]
-      x[[3]] <- x[[3]][x[[3]]$haul.id %in% lev,]
+      if(!is.null(x[[1]])) x[[1]] <- x[[1]][x[[1]]$haul.id %in% lev,]
+      if(!is.null(x[[3]])) x[[3]] <- x[[3]][x[[3]]$haul.id %in% lev,]
     } else { ## d1 , d3 subset
-      if(fit[1])x[[1]] <- x[[1]][na2false(eval(arg,x[[1]],parent.frame())),]
-      if(fit[3])x[[3]] <- x[[3]][na2false(eval(arg,x[[3]],parent.frame())),]
+      if(!is.null(x[[1]]) && fit[1]) x[[1]] <- x[[1]][na2false(eval(arg,x[[1]],parent.frame())),]
+      if(!is.null(x[[3]]) && fit[3]) x[[3]] <- x[[3]][na2false(eval(arg,x[[3]],parent.frame())),]
     }
   }
   ## Remove empty factor levels
   new.nrow <- sapply(x,nrow)
+  new.nrow[sapply(new.nrow,is.null)] <- 0
+  new.nrow <- unlist(new.nrow)
   changed <- old.nrow!=new.nrow
   ## d1,d3 --> refactor but not haul.id.
   refactor13 <- function(df){
@@ -223,12 +227,12 @@ subset.DATRASraw <- function(x,...,na.rm=TRUE){
     i <- sapply(df[[2]],is.factor)
     df[[2]][i] <- lapply(df[[2]][i],factor)
     lev <- levels(df[[2]]$haul.id)
-    df[[1]]$haul.id <- factor(df[[1]]$haul.id,levels=lev)
-    df[[3]]$haul.id <- factor(df[[3]]$haul.id,levels=lev)
+    if(!is.null(df[[1]])) df[[1]]$haul.id <- factor(df[[1]]$haul.id,levels=lev)
+    if(!is.null(df[[3]])) df[[3]]$haul.id <- factor(df[[3]]$haul.id,levels=lev)
     df
   }
-  for(i in c(1,3))if(changed[i])x[[i]] <- refactor13(x[[i]])
-  if(changed[2])x <- refactor2(x)
+  for(i in c(1,3)) if(changed[i] && !is.null(x[[i]])) x[[i]] <- refactor13(x[[i]])
+  if(changed[2]) x <- refactor2(x)
   x
 }
 
@@ -401,7 +405,7 @@ c.DATRASraw <- function(...){
         warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
                 paste(missingVariables,collapse=", "),
                 ". NA will be inserted.")
-        if(nrow(ans)>0){
+        if(is.null(ans) || nrow(ans)>0){
             ans[missingVariables] <- NA
         } else {
             for(ii in 1:length(missingVariables)) ans[,missingVariables[ii]] <- logical(0)
@@ -474,12 +478,12 @@ addExtraVariables <- function(IBTS){
                     )
     d3
   }
-  d3 <- mytransform(d3)
+  if(!is.null(d3)) d3 <- mytransform(d3)
   if(!is.null(d1)) d1 <- mytransform(d1)
   haul.id <- quote( factor(paste(Survey,Year,Quarter,Country,Ship,Gear,StNo,HaulNo,sep=":"))  )
   if(!is.null(d1)) d1$haul.id <- eval(haul.id,d1)
   d2$haul.id <- eval(haul.id,d2)
-  d3$haul.id <- eval(haul.id,d3)
+  if(!is.null(d3)) d3$haul.id <- eval(haul.id,d3)
 
   ## Reconstruct the original count-variable (ICES have standardized to 1 hour).
   ## DataType:
@@ -490,11 +494,12 @@ addExtraVariables <- function(IBTS){
   ##    are not different from the submissions with data type R.
   ## HLNoAtLngt for DataTypes R and S should be multiplied with SubFactor!
   ## Note, some BITS hauls (all LT and some DK) have dataType C but SubFactor>1 - two multipliers needed!
-  d3 <- merge(d3,d2[c("haul.id","HaulDur","DataType")],by="haul.id",all.x=TRUE,sort=FALSE)
-  multiplier1 <- ifelse(d3$DataType=="C",d3$HaulDur/60,1)
-  multiplier2 <- ifelse(!is.na(d3$SubFactor),d3$SubFactor,1)
-  d3$Count <- d3$HLNoAtLngt*multiplier1*multiplier2
-
+  if(!is.null(d3)) {
+    d3 <- merge(d3,d2[c("haul.id","HaulDur","DataType")],by="haul.id",all.x=TRUE,sort=FALSE)
+    multiplier1 <- ifelse(d3$DataType=="C",d3$HaulDur/60,1)
+    multiplier2 <- ifelse(!is.na(d3$SubFactor),d3$SubFactor,1)
+    d3$Count <- d3$HLNoAtLngt*multiplier1*multiplier2
+  }
   d2$abstime <- local(Year+(Month-1)*1/12+(Day-1)/365,d2)
   d2$timeOfYear <- local((Month-1)*1/12+(Day-1)/365,d2)
   d2$TimeShotHour=as.integer(d2$TimeShot/100) + (d2$TimeShot%%100)/60;
@@ -510,16 +515,18 @@ addExtraVariables <- function(IBTS){
   ## ---------------------------------------------------------------------------
   ## Allow some exceptions (with warning)
   ## ---------------------------------------------------------------------------
-  diff <- setdiff(levels(d2$haul.id),levels(d3$haul.id)) ## Hauls for which length is missing
-  if(length(diff)>0){
-    cat("========= WARNING: ============\n")
-    cat("Hauls without length info will be interpreted as empty hauls:\n")
-    print(diff)
+  if(!is.null(d3)) {
+    diff <- setdiff(levels(d2$haul.id),levels(d3$haul.id)) ## Hauls for which length is missing
+    if(length(diff)>0){
+      cat("========= WARNING: ============\n")
+      cat("Hauls without length info will be interpreted as empty hauls:\n")
+      print(diff)
+    }
   }
 
   ## Identical haul levels
   if(!is.null(d1)) d1$haul.id <- factor(d1$haul.id,levels=levels(d2$haul.id))
-  d3$haul.id <- factor(d3$haul.id,levels=levels(d2$haul.id))
+  if(!is.null(d3)) d3$haul.id <- factor(d3$haul.id,levels=levels(d2$haul.id))
 
   ## Check for duplicated rows in hydro data
   dups <- duplicated(d2)
@@ -530,13 +537,13 @@ addExtraVariables <- function(IBTS){
   ## ---------------------------------------------------------------------------
   ## "haul.id" consistent with Hydro data ?
   ## ---------------------------------------------------------------------------
-  stopifnot(nlevels(d3$haul.id) == nrow(d2))
+  if(!is.null(d3)) stopifnot(nlevels(d3$haul.id) == nrow(d2))
   ##stopifnot(identical(levels(h3),levels(h2)))
   cat("Consistency check passed\n")
 
   if(!is.null(d1)) IBTS[[1]] <- d1
   IBTS[[2]] <- d2
-  IBTS[[3]] <- d3
+  if(!is.null(d3)) IBTS[[3]] <- d3
 
   ## Convert Year and Quarter to factor
   for(i in 1:3){
@@ -546,11 +553,13 @@ addExtraVariables <- function(IBTS){
       }
   }
 
+  names(IBTS) <- c("CA","HH","HL")
   IBTS
 }
 
 reorderTimeLevels <- function(x){
   for(i in 1:3){
+    if (is.null(x[[i]])) next
     x[[i]]$Year <- factor(x[[i]]$Year,levels=sort(levels(x[[i]]$Year)))
     x[[i]]$Quarter <- factor(x[[i]]$Quarter,levels=sort(levels(x[[i]]$Quarter)))
   }
@@ -559,8 +568,8 @@ reorderTimeLevels <- function(x){
 
 refactorHaulLevels <- function(df){
   lev <- levels(df[[2]]$haul.id)
-  df[[1]]$haul.id <- factor(df[[1]]$haul.id,levels=lev)
-  df[[3]]$haul.id <- factor(df[[3]]$haul.id,levels=lev)
+  if (!is.null(df[[1]])) df[[1]]$haul.id <- factor(df[[1]]$haul.id,levels=lev)
+  if (!is.null(df[[3]])) df[[3]]$haul.id <- factor(df[[3]]$haul.id,levels=lev)
   df
 }
 
