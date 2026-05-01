@@ -31,6 +31,9 @@ getDatrasExchange <- function(survey, years, quarters, strict = TRUE,
 
   if (verbose) message("Downloading HH")
   hh <- getDATRAS("HH", survey = survey, years = years, quarters = quarters)
+  if (identical(hh, FALSE)) {
+    stop()
+  }
 
   if (download.hl) {
     if (verbose) message("Downloading HL")
@@ -423,7 +426,10 @@ c.DATRASraw <- function(...){
         warning("Incomplete DATRASraw? Missing ",names(x)[i],"-record(s): ",
                 paste(missingVariables,collapse=", "),
                 ". NA will be inserted.")
-        if(is.null(ans) || nrow(ans)>0){
+        if(is.null(ans)){
+          ans <- data.frame(row.names = integer(0))
+        }
+        if(nrow(ans)>0){
             ans[missingVariables] <- NA
         } else {
             for(ii in 1:length(missingVariables)) ans[,missingVariables[ii]] <- logical(0)
