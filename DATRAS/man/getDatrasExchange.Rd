@@ -4,7 +4,15 @@
 \alias{getDatrasExchange}
 \title{Read exchange data into R.}
 \usage{
-getDatrasExchange(survey, years, quarters, strict = TRUE)
+getDatrasExchange(
+  survey,
+  years,
+  quarters,
+  strict = TRUE,
+  download.hl = TRUE,
+  download.ca = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{survey}{Name of survey to download (For a list of available names run \code{icesDatras::getSurveyList()})}
@@ -14,6 +22,14 @@ getDatrasExchange(survey, years, quarters, strict = TRUE)
 \item{quarters}{Vector of quarters to download.}
 
 \item{strict}{if TRUE, missing haul ids in age data should be unqiuely matched when filled in, if FALSE a random match will be assigned.}
+
+\item{download.hl}{if FALSE, length frequency data in DATRAS ("HL") are
+not downloaded. Default: TRUE}
+
+\item{download.ca}{if FALSE, biological samples in DATRAS ("CA") are
+not downloaded. Default: TRUE}
+
+\item{verbose}{Print information? Default: TRUE}
 }
 \value{
 DATRASraw object.
