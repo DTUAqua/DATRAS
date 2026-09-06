@@ -505,7 +505,7 @@ fixDatrasTypes <- function(d){
       if(is.numeric(d[[i]][[v]])) next
       old <- as.character(d[[i]][[v]])
       old[old %in% naStrings] <- NA
-      new <- suppressWarnings(as.numeric(old))
+      new <- suppressWarnings(as.numeric(as.character(old)))
       if(any(is.na(new) & !is.na(old))){
         warning(paste0("Field '",v,"' in ",nam[i]," is not numeric and could ",
                        "not be converted - left unchanged."))
