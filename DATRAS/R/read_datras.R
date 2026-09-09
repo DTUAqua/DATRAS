@@ -462,7 +462,64 @@ addHaulID <- function(d){
   for(i in 1:3)d[[i]]$haul.id <- eval(haul.id,d[[i]])
   d
 }
+
+## ---------------------------------------------------------------------------
+## Fields that must be numeric, whatever the web service says they are
+## ---------------------------------------------------------------------------
+## The DATRAS field list declares several numeric exchange fields as "char"
+## (Year and TimeShot among them). Since icesDatras 1.5.2 (2026-06-25) that
+## schema is applied to downloaded data by default, see
+## icesDatras:::applyDatrasTypeSchema and options(icesDatras.fix_types), which
+## left Year as a character vector and broke the arithmetic in
+## addExtraVariables(). Names below are the canonical ones, i.e. after
+## renameDATRAS().
+datrasNumericFields <- list(
+  CA = c("Year","Quarter","HaulNo","SweepLngt","LngtClas","NoAtALK","IndWgt",
+         "Age","DateofCalculation"),
+  HH = c("Year","Quarter","Month","Day","HaulNo","SweepLngt","TimeShot",
+         "HaulDur","Depth","ShootLat","ShootLong","HaulLat","HaulLong",
+         "Distance","Netopening","DoorSpread","WingSpread","GroundSpeed",
+         "SurTemp","BotTemp","SurSal","BotSal","ThClineDepth","MinTrawlDepth",
+         "MaxTrawlDepth","DateofCalculation"),
+  HL = c("Year","Quarter","HaulNo","SweepLngt","TotalNo","CatIdentifier",
+         "NoMeas","SubFactor","SubWgt","CatCatchWgt","LngtClas","HLNoAtLngt",
+         "DateofCalculation")
+)
+
+## Convert the fields listed in 'datrasNumericFields' to numeric. Only fields
+## that are present and not already numeric are touched, and a conversion is
+## kept only if it introduces no new NAs, so a field that turns out to hold
+## genuinely non-numeric information is left alone with a warning instead of
+## being silently blanked. Everything else (StNo, StatRec, Ship, HaulVal,
+## LngtCode, ...) is left as it is.
+fixDatrasTypes <- function(d){
+  naStrings <- c("","-9","-9.0","-9.00","-9.0000")
+  nam <- names(d)
+  if(is.null(nam) || !all(c("CA","HH","HL") %in% nam))
+    nam <- names(datrasNumericFields)[seq_along(d)]
+  for(i in seq_along(d)){
+    if(is.null(d[[i]]) || !is.data.frame(d[[i]])) next
+    fields <- datrasNumericFields[[ nam[i] ]]
+    if(is.null(fields)) next
+    for(v in intersect(fields, names(d[[i]]))){
+      if(is.numeric(d[[i]][[v]])) next
+      old <- as.character(d[[i]][[v]])
+      old[old %in% naStrings] <- NA
+      new <- suppressWarnings(as.numeric(as.character(old)))
+      if(any(is.na(new) & !is.na(old))){
+        warning(paste0("Field '",v,"' in ",nam[i]," is not numeric and could ",
+                       "not be converted - left unchanged."))
+      } else {
+        d[[i]][[v]] <- new
+      }
+    }
+  }
+  d
+}
+
 addExtraVariables <- function(IBTS){
+  ## Guard against numeric exchange fields arriving as character (see above)
+  IBTS <- fixDatrasTypes(IBTS)
   d1 <- IBTS[[1]] ## Age data
   d2 <- IBTS[[2]] ## Hydro data - one line for each haul
   d3 <- IBTS[[3]] ## Length data
